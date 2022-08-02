@@ -1,0 +1,93 @@
+extends:
+- ./base-theme.yml
+- ./default-theme.yml
+font:
+  catalog:
+    merge: true
+    RedHatText:
+      normal: RedHatText-Regular.ttf
+      bold: RedHatText-Bold.ttf
+      italic: RedHatText-Italic.ttf
+      bold_italic: RedHatText-BoldItalic.ttf
+    M+ 1p Fallback: GEM_FONTS_DIR/mplus1p-regular-fallback.ttf
+    Noto Emoji: GEM_FONTS_DIR/notoemoji-subset.ttf
+  fallbacks: [M+ 1p Fallback, Noto Emoji]
+
+base:
+  align: left
+  font_family: RedHatText
+
+page:
+  margin: [25mm, 17mm, 28mm, 17mm]
+
+title_page:
+  align: left
+  background-image: image:redhatConsulting.png[]
+  title:
+    top: 60%
+  font_family: RedHatText
+
+header:
+  height: 19mm
+  border_color: #b7b7b7
+  recto:
+    left:
+       content: image:Logo-Red_Hat-Consulting-A-Standard-RGB.png[width=80]
+    center:
+       content: 
+    right:
+       content: |
+                 {docstatus}
+  verso:
+    left:
+       content: image:Logo-Red_Hat-Consulting-A-Standard-RGB.png[width=80]
+    center:
+       content: 
+    right:
+       content: |
+                 {docstatus}
+
+footer:
+  height: 19mm
+  recto:
+    left:
+      content: |
+                {customer} +
+                {confidentiality}
+    center:
+      content: |
+                {document-title} +
+                {description}
+    right:
+      content: |
+                {page-number} +
+                v{revnumber}
+  verso:
+    left:
+      content: |
+                {customer} +
+                {confidentiality}
+    center:
+      content: |
+                {document-title} +
+                {description}
+    right:
+      content: |
+                {page-number} +
+                v{revnumber}
+heading:
+  font-family: $base_font_family
+
+table:
+  background_color: transparent
+  head:
+    background_color: cccccc
+  body:
+    stripe-background-color: #efefef
+
+image:
+  align: center
+caption:
+  align: center
+
+

@@ -1,0 +1,1990 @@
+:author: Red Hat Consulting
+:toc:
+:numbered:
+:doctype: book
+:imagesdir: ../images
+:stylesdir: ../styles/
+:listing-caption: Listing
+:pdf-page-size: A4
+:pdf-style: redhat
+:pdf-stylesdir: styles/
+:pdf-fontsdir: fonts/
+
+= Openshift 4 Health Check Report
+
+== Commons
+
+=== Versions
+
+.Red Hat OpenShift Container Platform Life Cycle Policy
+
+
+https://access.redhat.com/support/policy/updates/openshift[Reference Documentation]
+
+----
+Client Version: 4.9.4
+Server Version: 4.10.18
+Kubernetes Version: v1.23.5+3afdacb
+----
+=== Components status
+
+.ComponentStatus (and ComponentStatusList) holds the cluster validation info. Deprecated: This API is deprecated in v1.19+
+
+
+https://docs.openshift.com/container-platform/4.10/rest_api/metadata_apis/componentstatus-v1.html[Reference Documentation]
+
+----
+NAME                 STATUS    MESSAGE                         ERROR
+controller-manager   Healthy   ok                              
+scheduler            Healthy   ok                              
+etcd-1               Healthy   {"health":"true","reason":""}   
+etcd-0               Healthy   {"health":"true","reason":""}   
+----
+=== Cluster Status Conditions
+
+.ClusterOperatorStatusCondition represents the state of the operator’s managed and monitored components.
+
+
+https://docs.openshift.com/container-platform/4.10/installing/validating-an-installation.html#getting-cluster-version-and-update-details_validating-an-installation[Reference Documentation]
+
+----
+----
+=== Cluster Abnormal Events
+
+.Events are records of important life-cycle information and are useful for monitoring and troubleshooting resource scheduling, creation, and deletion issues.
+
+
+https://docs.openshift.com/container-platform//virt/logging_events_monitoring/virt-events.html#virt-about-vm-events_virt-events[Reference Documentation]
+
+----
+NAMESPACE SEEN TYPE REASON
+ocapp-test Warning FailedCreate replicaset/my-app2-5f5c8df97d
+ocapp-test Warning FailedCreate replicaset/my-app3-7796c8c7bb
+----
+=== Cluster API Server Status
+
+----
+----
+=== Cluster Console Status
+
+----
+----
+== nodes
+
+=== Cluster Failing Nodes
+
+----
+----
+=== Cluster Node Conditions
+
+==== master Nodes
+**crc-5nvrm-master-0**
+----
+MemoryPressure False KubeletHasSufficientMemory
+DiskPressure False KubeletHasNoDiskPressure
+PIDPressure False KubeletHasSufficientPID
+----
+==== worker Nodes
+==== infra Nodes
+=== Nodes Capacity
+
+[%header,cols='3,1,1,1,2,2,1']
+|===
+|NODE|TYPE|OS|CPU|MEM|STORAGE|PODS
+|crc-5nvrm-master-0|master|CoreOS|4|31970284Ki|15377152Ki|250
+|===
+=== Custom Resource Definitions
+
+.A custom resource definition (CRD) object defines a new, unique object type, called a kind, in the cluster and lets the Kubernetes API server handle its entire lifecycle.
+
+
+https://docs.openshift.com/container-platform/4.10/operators/understanding/crds/crd-extending-api-with-crds.html[Reference Documentation]
+
+----
+alertmanagerconfigs.monitoring.coreos.com
+alertmanagers.monitoring.coreos.com
+apirequestcounts.apiserver.openshift.io
+apiservers.config.openshift.io
+authentications.config.openshift.io
+authentications.operator.openshift.io
+baremetalhosts.metal3.io
+bmceventsubscriptions.metal3.io
+builds.config.openshift.io
+catalogsources.operators.coreos.com
+cloudcredentials.operator.openshift.io
+clusterautoscalers.autoscaling.openshift.io
+clustercsidrivers.operator.openshift.io
+clusternetworks.network.openshift.io
+clusteroperators.config.openshift.io
+clusterresourcequotas.quota.openshift.io
+clusterserviceversions.operators.coreos.com
+clusterversions.config.openshift.io
+configs.imageregistry.operator.openshift.io
+configs.operator.openshift.io
+configs.samples.operator.openshift.io
+consoleclidownloads.console.openshift.io
+consoleexternalloglinks.console.openshift.io
+consolelinks.console.openshift.io
+consolenotifications.console.openshift.io
+consoleplugins.console.openshift.io
+consolequickstarts.console.openshift.io
+consoles.config.openshift.io
+consoles.operator.openshift.io
+consoleyamlsamples.console.openshift.io
+containerruntimeconfigs.machineconfiguration.openshift.io
+controllerconfigs.machineconfiguration.openshift.io
+credentialsrequests.cloudcredential.openshift.io
+csisnapshotcontrollers.operator.openshift.io
+dnses.config.openshift.io
+dnses.operator.openshift.io
+dnsrecords.ingress.operator.openshift.io
+egressnetworkpolicies.network.openshift.io
+egressrouters.network.operator.openshift.io
+etcds.operator.openshift.io
+featuregates.config.openshift.io
+firmwareschemas.metal3.io
+helmchartrepositories.helm.openshift.io
+hostfirmwaresettings.metal3.io
+hostsubnets.network.openshift.io
+imagecontentpolicies.config.openshift.io
+imagecontentsourcepolicies.operator.openshift.io
+imagepruners.imageregistry.operator.openshift.io
+images.config.openshift.io
+infrastructures.config.openshift.io
+ingresscontrollers.operator.openshift.io
+ingresses.config.openshift.io
+installplans.operators.coreos.com
+ippools.whereabouts.cni.cncf.io
+kubeapiservers.operator.openshift.io
+kubecontrollermanagers.operator.openshift.io
+kubeletconfigs.machineconfiguration.openshift.io
+kubeschedulers.operator.openshift.io
+kubestorageversionmigrators.operator.openshift.io
+machineautoscalers.autoscaling.openshift.io
+machineconfigpools.machineconfiguration.openshift.io
+machineconfigs.machineconfiguration.openshift.io
+machinehealthchecks.machine.openshift.io
+machines.machine.openshift.io
+machinesets.machine.openshift.io
+netnamespaces.network.openshift.io
+network-attachment-definitions.k8s.cni.cncf.io
+networks.config.openshift.io
+networks.operator.openshift.io
+oauths.config.openshift.io
+olmconfigs.operators.coreos.com
+openshiftapiservers.operator.openshift.io
+openshiftcontrollermanagers.operator.openshift.io
+operatorconditions.operators.coreos.com
+operatorgroups.operators.coreos.com
+operatorhubs.config.openshift.io
+operatorpkis.network.operator.openshift.io
+operators.operators.coreos.com
+overlappingrangeipreservations.whereabouts.cni.cncf.io
+podmonitors.monitoring.coreos.com
+podnetworkconnectivitychecks.controlplane.operator.openshift.io
+preprovisioningimages.metal3.io
+probes.monitoring.coreos.com
+profiles.tuned.openshift.io
+projecthelmchartrepositories.helm.openshift.io
+projects.config.openshift.io
+prometheuses.monitoring.coreos.com
+prometheusrules.monitoring.coreos.com
+provisionings.metal3.io
+proxies.config.openshift.io
+rangeallocations.security.internal.openshift.io
+rolebindingrestrictions.authorization.openshift.io
+schedulers.config.openshift.io
+securitycontextconstraints.security.openshift.io
+servicecas.operator.openshift.io
+servicemonitors.monitoring.coreos.com
+storages.operator.openshift.io
+storagestates.migration.k8s.io
+storageversionmigrations.migration.k8s.io
+subscriptions.operators.coreos.com
+thanosrulers.monitoring.coreos.com
+tuneds.tuned.openshift.io
+----
+=== Cluster Resource Quotas
+
+.A multi-project quota, defined by a ClusterResourceQuota object, allows quotas to be shared across multiple projects.
+
+
+https://docs.openshift.com/container-platform/4.10/applications/quotas/quotas-setting-across-multiple-projects.html[Reference Documentation]
+
+----
+----
+=== Cluster Service Versions
+
+.A multi-project quota, defined by a ClusterResourceQuota object, allows quotas to be shared across multiple projects.
+
+
+https://docs.openshift.com/container-platform/4.10/applications/quotas/quotas-setting-across-multiple-projects.html[Reference Documentation]
+
+----
+NAMESPACE                              NAME            DISPLAY          VERSION   REPLACES   PHASE
+openshift-operator-lifecycle-manager   packageserver   Package Server   0.19.0               Succeeded
+----
+== Machines
+
+=== Machine Info
+
+.Using machine management you can perform auto-scaling based on specific workload policies.
+
+
+https://docs.openshift.com/container-platform/4.10/machine_management/index.html[Reference Documentation]
+
+----
+NAMESPACE               NAME                 PHASE     TYPE   REGION   ZONE   AGE
+openshift-machine-api   crc-5nvrm-master-0   Running                          42d
+----
+=== Machinesets Info
+
+.Using machine management you can perform auto-scaling based on specific workload policies.
+
+
+https://docs.openshift.com/container-platform/4.10/machine_management/index.html[Reference Documentation]
+
+----
+NAMESPACE               NAME                 DESIRED   CURRENT   READY   AVAILABLE   AGE
+openshift-machine-api   crc-5nvrm-worker-0   0         0                             42d
+----
+=== Machine Configs
+
+.Using machine management you can perform auto-scaling based on specific workload policies.
+
+
+https://docs.openshift.com/container-platform/4.10/machine_management/index.html[Reference Documentation]
+
+----
+----
+=== Machine Configs
+
+.Using machine management you can perform auto-scaling based on specific workload policies.
+
+
+https://docs.openshift.com/container-platform/4.10/machine_management/index.html[Reference Documentation]
+
+----
+----
+=== Machine Auto Scalers
+
+.Using machine management you can perform auto-scaling based on specific workload policies.
+
+
+https://docs.openshift.com/container-platform/4.10/machine_management/index.html[Reference Documentation]
+
+----
+----
+=== Cluster Auto Scalers
+
+.Using machine management you can perform auto-scaling based on specific workload policies.
+
+
+https://docs.openshift.com/container-platform/4.10/machine_management/index.html[Reference Documentation]
+
+----
+----
+=== Machine Health Checks
+
+.Machine health checks automatically repair unhealthy machines in a particular machine pool.
+
+
+https://docs.openshift.com/container-platform/4.10/machine_management/deploying-machine-health-checks.html#machine-health-checks-about_deploying-machine-health-checks[Reference Documentation]
+
+----
+NAMESPACE               NAME                              MAXUNHEALTHY   EXPECTEDMACHINES   CURRENTHEALTHY
+openshift-machine-api   machine-api-termination-handler   100%           0                  0
+----
+== etcd
+
+=== etcd pods info
+
+.For large and dense clusters, etcd can suffer from poor performance if the keyspace grows too large and exceeds the space quota.
+
+
+https://docs.openshift.com/container-platform/4.10/scalability_and_performance/recommended-host-practices.html#recommended-etcd-practices_recommended-host-practices[Reference Documentation]
+
+----
+NAME                      READY   STATUS    RESTARTS   AGE
+etcd-crc-5nvrm-master-0   4/4     Running   16         42d
+----
+=== Members in the cluster
+
+.For large and dense clusters, etcd can suffer from poor performance if the keyspace grows too large and exceeds the space quota.
+
+
+https://docs.openshift.com/container-platform/4.10/scalability_and_performance/recommended-host-practices.html#recommended-etcd-practices_recommended-host-practices[Reference Documentation]
+
+[%header, %autowidth]
+|===
+|        ID        | STATUS  |        NAME        |         PEER ADDRS          |        CLIENT ADDRS         | IS LEARNER
+| 6ef9bb7ffab9d73b | started | crc-5nvrm-master-0 | https://192.168.126.11:2380 | https://192.168.126.11:2379 |      false
+|===
+=== Endpoints status
+
+.Health check should be enabled on MachineConfig and routers endpoints.
+
+
+https://docs.openshift.com/container-platform/4.10/networking/verifying-connectivity-endpoint.html[Reference Documentation]
+
+[%header, %autowidth]
+|===
+|          ENDPOINT           |        ID        | VERSION | DB SIZE | IS LEADER | IS LEARNER | RAFT TERM | RAFT INDEX | RAFT APPLIED INDEX | ERRORS
+| https://192.168.126.11:2379 | 6ef9bb7ffab9d73b |   3.5.3 |   88 MB |      true |      false |        12 |    2220941 |            2220941 |       
+|===
+=== Endpoints Health
+
+.Health check should be enabled on MachineConfig and routers endpoints.
+
+
+https://docs.openshift.com/container-platform/4.10/networking/verifying-connectivity-endpoint.html[Reference Documentation]
+
+[%header, %autowidth]
+|===
+|          ENDPOINT           | HEALTH |    TOOK    | ERROR
+| https://192.168.126.11:2379 |   true | 6.081431ms |      
+|===
+== pods
+
+=== Failing pods
+
+.A pod, is one or more containers deployed together on one host. Pods are the rough equivalent of a machine instance to a container.
+
+
+https://docs.openshift.com/container-platform/4.10/nodes/pods/nodes-pods-viewing.html[Reference Documentation]
+
+----
+NAMESPACE   NAME             READY  STATUS  RESTARTS  AGE
+ocapp-test  my-app2-1-build  0/1    Error   0         14d
+ocapp-test  my-app3-1-build  0/1    Error   0         14d
+----
+=== Constanstly restarted pods
+
+.A pod, is one or more containers deployed together on one host. Pods are the rough equivalent of a machine instance to a container.
+
+
+https://docs.openshift.com/container-platform/4.10/nodes/pods/nodes-pods-viewing.html[Reference Documentation]
+
+----
+openshift-machine-api                 machine-api-controllers-576c6d7795-vjzr5     7/7  Running  48  42d          
+openshift-kube-controller-manager     kube-controller-manager-crc-5nvrm-master-0   4/4  Running  24  42d          
+openshift-kube-apiserver              kube-apiserver-crc-5nvrm-master-0            5/5  Running  16  6d18h        
+openshift-etcd                        etcd-crc-5nvrm-master-0                      4/4  Running  16  42d          
+openshift-kube-scheduler              openshift-kube-scheduler-crc-5nvrm-master-0  3/3  Running  15  42d          
+openshift-cluster-machine-approver    machine-approver-697c6c67f-pl7qf             2/2  Running  15  (44h   ago)  41d
+openshift-sdn                         sdn-controller-6fx72                         2/2  Running  9   42d          
+openshift-operator-lifecycle-manager  packageserver-68868bbf8c-jpxgm               1/1  Running  9   42d          
+openshift-machine-api                 machine-api-operator-5869dbb6f9-65zc2        2/2  Running  9   42d          
+openshift-sdn                         sdn-552c8                                    2/2  Running  8   42d          
+----
+=== Long running pods
+
+.A pod, is one or more containers deployed together on one host. Pods are the rough equivalent of a machine instance to a container.
+
+
+https://docs.openshift.com/container-platform/4.10/nodes/pods/nodes-pods-viewing.html[Reference Documentation]
+
+----
+openshift-marketplace                 certified-operators-gkmhp              1/1  Running  0  102m
+openshift-service-ca                  service-ca-7567987bc8-7wl9j            1/1  Running  5  42d
+openshift-sdn                         sdn-controller-6fx72                   2/2  Running  9  42d
+openshift-sdn                         sdn-552c8                              2/2  Running  8  42d
+openshift-operator-lifecycle-manager  packageserver-68868bbf8c-jpxgm         1/1  Running  9  42d
+openshift-oauth-apiserver             apiserver-65b8444f69-zfxrz             1/1  Running  4  42d
+openshift-network-diagnostics         network-check-target-85xvd             1/1  Running  4  42d
+openshift-network-diagnostics         network-check-source-695cdb7747-cf742  1/1  Running  4  42d
+openshift-multus                      network-metrics-daemon-5gfkl           2/2  Running  8  42d
+openshift-multus                      multus-bzhmc                           1/1  Running  4  42d
+----
+=== Pod Disruption Budget
+
+.PodDisruptionBudget is an API object that specifies the minimum number or percentage of replicas that must be up at a time.
+
+
+https://docs.openshift.com/container-platform/4.10/nodes/pods/nodes-pods-configuring.html#nodes-pods-configuring-pod-distruption-about_nodes-pods-configuring[Reference Documentation]
+
+----
+NAMESPACE                             NAME               MIN  AVAILABLE  MAX  UNAVAILABLE  ALLOWED  DISRUPTIONS  AGE
+openshift-image-registry              image-registry     0    N/A        1    42d                                
+openshift-operator-lifecycle-manager  packageserver-pdb  N/A  1          1    42d                                
+----
+=== Pods in default namespace
+
+.Pods in the default namespace are often installed by mistake or misconfigurations.
+
+----
+----
+=== Pods per node
+
+----
+     88 crc-5nvrm-master-0
+----
+== performance
+
+=== Nodes memory utilization
+
+.All nodes meet the minimum requirements and are currently allocated to an amount appropriate to handle the workloads deployed to the cluster
+
+
+https://docs.openshift.com/container-platform/4.10/scalability_and_performance/planning-your-environment-according-to-object-maximums.html#cluster-maximums-environment_object-limits[Reference Documentation]
+
+----
+crc-5nvrm-master-0   788m   20%   10328Mi   70%   
+----
+=== Nodes CPU utilization
+
+.All nodes meet the minimum requirements and are currently allocated to an amount appropriate to handle the workloads deployed to the cluster
+
+
+https://docs.openshift.com/container-platform/4.10/scalability_and_performance/planning-your-environment-according-to-object-maximums.html#cluster-maximums-environment_object-limits[Reference Documentation]
+
+----
+crc-5nvrm-master-0   788m   20%   10328Mi   70%   
+----
+=== Pods memory utilization
+
+.As an administrator, you can view the pods in your cluster and to determine the health of those pods and the cluster as a whole.
+
+
+https://docs.openshift.com/container-platform/4.10/nodes/pods/nodes-pods-viewing.html[Reference Documentation]
+
+----
+NAMESPACE                             NAME                                           CPU(cores)  MEMORY(bytes)
+openshift-kube-apiserver              kube-apiserver-crc-5nvrm-master-0              222m        1826Mi
+openshift-monitoring                  prometheus-k8s-0                               46m         1206Mi
+openshift-etcd                        etcd-crc-5nvrm-master-0                        118m        812Mi
+openshift-kube-controller-manager     kube-controller-manager-crc-5nvrm-master-0     10m         447Mi
+openshift-apiserver                   apiserver-6c7d78dfc4-v28gn                     16m         241Mi
+openshift-authentication-operator     authentication-operator-6ddbbdbf46-9rsc7       25m         181Mi
+openshift-machine-api                 machine-api-controllers-576c6d7795-vjzr5       0m          179Mi
+openshift-monitoring                  prometheus-operator-76f79c8d85-xn57s           0m          164Mi
+openshift-operator-lifecycle-manager  packageserver-68868bbf8c-jpxgm                 5m          151Mi
+openshift-controller-manager          controller-manager-tdftp                       2m          148Mi
+openshift-operator-lifecycle-manager  olm-operator-67fcdb489c-96kxh                  2m          139Mi
+openshift-monitoring                  thanos-querier-647cd76596-tx86p                15m         137Mi
+openshift-ingress-operator            ingress-operator-7899578f6-b5ljs               1m          132Mi
+openshift-service-ca                  service-ca-7567987bc8-7wl9j                    2m          130Mi
+openshift-network-operator            network-operator-7d77dffff9-qfzzx              1m          125Mi
+openshift-kube-scheduler              openshift-kube-scheduler-crc-5nvrm-master-0    2m          124Mi
+openshift-kube-apiserver-operator     kube-apiserver-operator-5f76847f99-8svn8       10m         124Mi
+openshift-monitoring                  grafana-5487f6d9cf-vxp6k                       3m          112Mi
+openshift-cluster-version             cluster-version-operator-688999f8cd-gpr79      21m         109Mi
+openshift-apiserver-operator          openshift-apiserver-operator-6756c64b88-kh9qj  5m          109Mi
+----
+=== Pods CPU utilization
+
+.As an administrator, you can view the pods in your cluster and to determine the health of those pods and the cluster as a whole.
+
+
+https://docs.openshift.com/container-platform/4.10/nodes/pods/nodes-pods-viewing.html[Reference Documentation]
+
+----
+NAMESPACE                                   NAME                                                CPU(cores)  MEMORY(bytes)
+openshift-kube-apiserver                    kube-apiserver-crc-5nvrm-master-0                   222m        1826Mi
+openshift-etcd                              etcd-crc-5nvrm-master-0                             118m        812Mi
+openshift-monitoring                        prometheus-k8s-0                                    46m         1206Mi
+openshift-authentication-operator           authentication-operator-6ddbbdbf46-9rsc7            25m         181Mi
+openshift-cluster-version                   cluster-version-operator-688999f8cd-gpr79           21m         109Mi
+openshift-oauth-apiserver                   apiserver-65b8444f69-zfxrz                          18m         78Mi
+openshift-apiserver                         apiserver-6c7d78dfc4-v28gn                          16m         241Mi
+openshift-monitoring                        thanos-querier-647cd76596-tx86p                     15m         137Mi
+openshift-kube-apiserver-operator           kube-apiserver-operator-5f76847f99-8svn8            10m         124Mi
+openshift-kube-controller-manager           kube-controller-manager-crc-5nvrm-master-0          10m         447Mi
+openshift-multus                            multus-bzhmc                                        8m          5Mi
+openshift-kube-controller-manager-operator  kube-controller-manager-operator-8569749977-gcjw8   6m          82Mi
+openshift-etcd-operator                     etcd-operator-6d6ff5499d-cd588                      6m          80Mi
+openshift-operator-lifecycle-manager        packageserver-68868bbf8c-jpxgm                      5m          151Mi
+openshift-apiserver-operator                openshift-apiserver-operator-6756c64b88-kh9qj       5m          109Mi
+openshift-monitoring                        prometheus-adapter-6dbdddc76b-bdr2v                 5m          63Mi
+openshift-kube-scheduler-operator           openshift-kube-scheduler-operator-78bdb8d5df-fpfsl  4m          69Mi
+openshift-monitoring                        grafana-5487f6d9cf-vxp6k                            3m          112Mi
+openshift-authentication                    oauth-openshift-6f84d5c786-4jkc4                    3m          48Mi
+openshift-marketplace                       redhat-marketplace-bhgkk                            3m          96Mi
+----
+== security
+
+=== Pending CSRs
+
+.When you add machines to a cluster, certificate signing requests (CSRs) are generated that you must confirm and approve.
+
+
+https://docs.openshift.com/container-platform/4.10/machine_management/user_infra/adding-aws-compute-user-infra.html#installation-approve-csrs_adding-aws-compute-user-infra[Reference Documentation]
+
+----
+----
+=== Cluster Identities
+
+.By default, only a kubeadmin user exists on your cluster. Identity providers create a Custom Resource that describes that identity provider and add it to the cluster.
+
+
+https://docs.openshift.com/container-platform/4.10/authentication/identity_providers/configuring-htpasswd-identity-provider.html#identity-provider-overview_configuring-htpasswd-identity-provider[Reference Documentation]
+
+----
+NAME                  IDP NAME    IDP USER NAME   USER NAME   USER UID
+developer:developer   developer   developer       developer   ca077f0b-2f5e-4304-9c32-8046d4ede025
+developer:kubeadmin   developer   kubeadmin       kubeadmin   8facc26a-4157-4d65-be96-ee5b50ff2b0d
+----
+=== Identities grants
+
+.The OpenShift Container Platform control plane includes a built-in OAuth server. Developers and administrators obtain OAuth access tokens to authenticate themselves to the API.
+
+
+https://docs.openshift.com/container-platform/4.10/post_installation_configuration/preparing-for-users.html[Reference Documentation]
+
+==== Identities who can create users
+----
+Users:  kubeadmin
+        system:admin
+        system:serviceaccount:openshift-apiserver-operator:openshift-apiserver-operator
+        system:serviceaccount:openshift-apiserver:openshift-apiserver-sa
+        system:serviceaccount:openshift-authentication-operator:authentication-operator
+        system:serviceaccount:openshift-authentication:oauth-openshift
+        system:serviceaccount:openshift-cluster-storage-operator:cluster-storage-operator
+        system:serviceaccount:openshift-cluster-storage-operator:csi-snapshot-controller-operator
+        system:serviceaccount:openshift-cluster-version:default
+        system:serviceaccount:openshift-config-operator:openshift-config-operator
+        system:serviceaccount:openshift-controller-manager-operator:openshift-controller-manager-operator
+        system:serviceaccount:openshift-etcd-operator:etcd-operator
+        system:serviceaccount:openshift-etcd:installer-sa
+        system:serviceaccount:openshift-kube-apiserver-operator:kube-apiserver-operator
+        system:serviceaccount:openshift-kube-apiserver:installer-sa
+        system:serviceaccount:openshift-kube-apiserver:localhost-recovery-client
+        system:serviceaccount:openshift-kube-controller-manager-operator:kube-controller-manager-operator
+        system:serviceaccount:openshift-kube-controller-manager:installer-sa
+        system:serviceaccount:openshift-kube-controller-manager:localhost-recovery-client
+        system:serviceaccount:openshift-kube-scheduler-operator:openshift-kube-scheduler-operator
+        system:serviceaccount:openshift-kube-scheduler:installer-sa
+        system:serviceaccount:openshift-kube-scheduler:localhost-recovery-client
+        system:serviceaccount:openshift-kube-storage-version-migrator-operator:kube-storage-version-migrator-operator
+        system:serviceaccount:openshift-machine-config-operator:default
+        system:serviceaccount:openshift-network-operator:default
+        system:serviceaccount:openshift-oauth-apiserver:oauth-apiserver-sa
+        system:serviceaccount:openshift-operator-lifecycle-manager:olm-operator-serviceaccount
+        system:serviceaccount:openshift-service-ca-operator:service-ca-operator
+----
+==== Identities who can delete users
+----
+Users:  kubeadmin
+        system:admin
+        system:serviceaccount:kube-system:generic-garbage-collector
+        system:serviceaccount:kube-system:namespace-controller
+        system:serviceaccount:openshift-apiserver-operator:openshift-apiserver-operator
+        system:serviceaccount:openshift-apiserver:openshift-apiserver-sa
+        system:serviceaccount:openshift-authentication-operator:authentication-operator
+        system:serviceaccount:openshift-authentication:oauth-openshift
+        system:serviceaccount:openshift-cluster-storage-operator:cluster-storage-operator
+        system:serviceaccount:openshift-cluster-storage-operator:csi-snapshot-controller-operator
+        system:serviceaccount:openshift-cluster-version:default
+        system:serviceaccount:openshift-config-operator:openshift-config-operator
+        system:serviceaccount:openshift-controller-manager-operator:openshift-controller-manager-operator
+        system:serviceaccount:openshift-etcd-operator:etcd-operator
+        system:serviceaccount:openshift-etcd:installer-sa
+        system:serviceaccount:openshift-kube-apiserver-operator:kube-apiserver-operator
+        system:serviceaccount:openshift-kube-apiserver:installer-sa
+        system:serviceaccount:openshift-kube-apiserver:localhost-recovery-client
+        system:serviceaccount:openshift-kube-controller-manager-operator:kube-controller-manager-operator
+        system:serviceaccount:openshift-kube-controller-manager:installer-sa
+        system:serviceaccount:openshift-kube-controller-manager:localhost-recovery-client
+        system:serviceaccount:openshift-kube-scheduler-operator:openshift-kube-scheduler-operator
+        system:serviceaccount:openshift-kube-scheduler:installer-sa
+        system:serviceaccount:openshift-kube-scheduler:localhost-recovery-client
+        system:serviceaccount:openshift-kube-storage-version-migrator-operator:kube-storage-version-migrator-operator
+        system:serviceaccount:openshift-machine-config-operator:default
+        system:serviceaccount:openshift-network-operator:default
+        system:serviceaccount:openshift-oauth-apiserver:oauth-apiserver-sa
+        system:serviceaccount:openshift-operator-lifecycle-manager:olm-operator-serviceaccount
+        system:serviceaccount:openshift-service-ca-operator:service-ca-operator
+----
+=== Rolebindings
+
+.Binding, or adding, a role to users or groups gives the user or group the access that is granted by the role.
+
+
+https://docs.openshift.com/container-platform/4.10/post_installation_configuration/preparing-for-users.html#adding-roles_post-install-preparing-for-users[Reference Documentation]
+
+----
+NAMESPACE NAME 
+ 		 ROLE
+default machine-config-controller-events 
+ 		 ClusterRole/machine-config-controller-events
+default machine-config-daemon-events 
+ 		 ClusterRole/machine-config-daemon-events
+default prometheus-k8s 
+ 		 Role/prometheus-k8s
+default system:deployers 
+ 		 ClusterRole/system:deployer
+default system:image-builders 
+ 		 ClusterRole/system:image-builder
+default system:image-pullers 
+ 		 ClusterRole/system:image-puller
+deleteme admin 
+ 		 ClusterRole/admin
+deleteme system:deployers 
+ 		 ClusterRole/system:deployer
+deleteme system:image-builders 
+ 		 ClusterRole/system:image-builder
+----
+=== Cluster Rolebindings
+
+.Binding, or adding, a role to users or groups gives the user or group the access that is granted by the role.
+
+
+https://docs.openshift.com/container-platform/4.10/post_installation_configuration/preparing-for-users.html#adding-roles_post-install-preparing-for-users[Reference Documentation]
+
+----
+system:openshift:controller:template-instance-controller:admin             admin
+system:openshift:controller:template-instance-finalizer-controller:admin   admin
+alertmanager-main                                                          alertmanager-main
+basic-users                                                                basic-user
+cloud-controller-manager                                                   cloud-controller-manager
+cloud-credential-operator-rolebinding                                      cloud-credential-operator-role
+cloud-node-manager                                                         cloud-node-manager
+cluster-admin                                                              cluster-admin
+cluster-admins                                                             cluster-admin
+cluster-storage-operator-role                                              cluster-admin
+cluster-version-operator                                                   cluster-admin
+csi-snapshot-controller-operator-role                                      cluster-admin
+default-account-cluster-network-operator                                   cluster-admin
+default-account-openshift-machine-config-operator                          cluster-admin
+kubeadmin                                                                  cluster-admin
+system:openshift:oauth-apiserver                                           cluster-admin
+system:openshift:openshift-apiserver                                       cluster-admin
+system:openshift:openshift-authentication                                  cluster-admin
+system:openshift:operator:authentication                                   cluster-admin
+system:openshift:operator:cluster-kube-scheduler-operator                  cluster-admin
+system:openshift:operator:etcd-operator                                    cluster-admin
+system:openshift:operator:kube-apiserver-operator                          cluster-admin
+system:openshift:operator:kube-apiserver-recovery                          cluster-admin
+system:openshift:operator:kube-controller-manager-operator                 cluster-admin
+system:openshift:operator:kube-controller-manager-recovery                 cluster-admin
+system:openshift:operator:kube-scheduler-recovery                          cluster-admin
+system:openshift:operator:kube-storage-version-migrator-operator           cluster-admin
+system:openshift:operator:openshift-apiserver-operator                     cluster-admin
+system:openshift:operator:openshift-config-operator                        cluster-admin
+system:openshift:operator:openshift-controller-manager-operator            cluster-admin
+system:openshift:operator:openshift-etcd-installer                         cluster-admin
+system:openshift:operator:openshift-kube-apiserver-installer               cluster-admin
+system:openshift:operator:openshift-kube-controller-manager-installer      cluster-admin
+system:openshift:operator:openshift-kube-scheduler-installer               cluster-admin
+system:openshift:operator:service-ca-operator                              cluster-admin
+cluster-autoscaler                                                         cluster-autoscaler
+cluster-autoscaler-operator                                                cluster-autoscaler-operator
+cluster-baremetal-operator                                                 cluster-baremetal-operator
+default-account-cluster-image-registry-operator                            cluster-image-registry-operator
+cluster-monitoring-operator                                                cluster-monitoring-operator
+prometheus-adapter-view                                                    cluster-monitoring-view
+telemeter-client-view                                                      cluster-monitoring-view
+cluster-node-tuning-operator                                               cluster-node-tuning-operator
+cluster-node-tuning:tuned                                                  cluster-node-tuning:tuned
+cluster-readers                                                            cluster-reader
+insights-operator-gather-reader                                            cluster-reader
+cluster-samples-operator                                                   cluster-samples-operator
+cluster-samples-operator-imageconfig-reader                                cluster-samples-operator-imageconfig-reader
+cluster-samples-operator-proxy-reader                                      cluster-samples-operator-proxy-reader
+cluster-status-binding                                                     cluster-status
+console                                                                    console
+console-extensions-reader                                                  console-extensions-reader
+console-operator                                                           console-operator
+dns-monitoring                                                             dns-monitoring
+grafana                                                                    grafana
+helm-chartrepos-view                                                       helm-chartrepos-viewer
+insights-operator                                                          insights-operator
+insights-operator-gather                                                   insights-operator-gather
+kube-apiserver                                                             kube-apiserver
+kube-state-metrics                                                         kube-state-metrics
+machine-api-controllers                                                    machine-api-controllers
+machine-api-operator                                                       machine-api-operator
+machine-api-operator-ext-remediation                                       machine-api-operator-ext-remediation
+machine-config-controller                                                  machine-config-controller
+machine-config-daemon                                                      machine-config-daemon
+machine-config-server                                                      machine-config-server
+marketplace-operator                                                       marketplace-operator
+metrics-daemon-sa-rolebinding                                              metrics-daemon-role
+multus                                                                     multus
+multus-admission-controller-webhook                                        multus-admission-controller-webhook
+network-diagnostics                                                        network-diagnostics
+node-exporter                                                              node-exporter
+openshift-csi-snapshot-controller-role                                     openshift-csi-snapshot-controller-runner
+openshift-dns                                                              openshift-dns
+openshift-dns-operator                                                     openshift-dns-operator
+openshift-ingress-operator                                                 openshift-ingress-operator
+openshift-ingress-router                                                   openshift-ingress-router
+openshift-sdn                                                              openshift-sdn
+openshift-sdn-controller                                                   openshift-sdn-controller
+openshift-state-metrics                                                    openshift-state-metrics
+prometheus-adapter                                                         prometheus-adapter
+prometheus-k8s                                                             prometheus-k8s
+prometheus-k8s-scheduler-resources                                         prometheus-k8s-scheduler-resources
+prometheus-operator                                                        prometheus-operator
+registry-monitoring                                                        registry-monitoring
+NAME                                                                       ROLE
+router-monitoring                                                          router-monitoring
+self-access-reviewers                                                      self-access-reviewer
+self-provisioners                                                          self-provisioner
+console-auth-delegator                                                     system:auth-delegator
+console-operator-auth-delegator                                            system:auth-delegator
+insights-operator-auth                                                     system:auth-delegator
+packageserver-service-system:auth-delegator                                system:auth-delegator
+resource-metrics:system:auth-delegator                                     system:auth-delegator
+system:openshift:controller:kube-apiserver-check-endpoints-auth-delegator  system:auth-delegator
+system:basic-user                                                          system:basic-user
+system:build-strategy-docker-binding                                       system:build-strategy-docker
+system:build-strategy-jenkinspipeline-binding                              system:build-strategy-jenkinspipeline
+system:build-strategy-source-binding                                       system:build-strategy-source
+system-bootstrap-node-renewal                                              system:certificates.k8s.io:certificatesigningrequests:selfnodeclient
+system:controller:attachdetach-controller                                  system:controller:attachdetach-controller
+system:controller:certificate-controller                                   system:controller:certificate-controller
+system:controller:clusterrole-aggregation-controller                       system:controller:clusterrole-aggregation-controller
+system:controller:cronjob-controller                                       system:controller:cronjob-controller
+system:controller:daemon-set-controller                                    system:controller:daemon-set-controller
+system:controller:deployment-controller                                    system:controller:deployment-controller
+system:controller:disruption-controller                                    system:controller:disruption-controller
+system:controller:endpoint-controller                                      system:controller:endpoint-controller
+system:controller:endpointslice-controller                                 system:controller:endpointslice-controller
+system:controller:endpointslicemirroring-controller                        system:controller:endpointslicemirroring-controller
+system:controller:ephemeral-volume-controller                              system:controller:ephemeral-volume-controller
+system:controller:expand-controller                                        system:controller:expand-controller
+system:controller:generic-garbage-collector                                system:controller:generic-garbage-collector
+system:controller:horizontal-pod-autoscaler                                system:controller:horizontal-pod-autoscaler
+system:controller:job-controller                                           system:controller:job-controller
+system:controller:namespace-controller                                     system:controller:namespace-controller
+system:controller:node-controller                                          system:controller:node-controller
+olm-operator-binding-openshift-operator-lifecycle-manager                  system:controller:operator-lifecycle-manager
+system:controller:persistent-volume-binder                                 system:controller:persistent-volume-binder
+system:controller:pod-garbage-collector                                    system:controller:pod-garbage-collector
+system:controller:pvc-protection-controller                                system:controller:pvc-protection-controller
+system:controller:pv-protection-controller                                 system:controller:pv-protection-controller
+system:controller:replicaset-controller                                    system:controller:replicaset-controller
+system:controller:replication-controller                                   system:controller:replication-controller
+system:controller:resourcequota-controller                                 system:controller:resourcequota-controller
+system:controller:root-ca-cert-publisher                                   system:controller:root-ca-cert-publisher
+system:controller:route-controller                                         system:controller:route-controller
+system:controller:service-account-controller                               system:controller:service-account-controller
+system:controller:service-ca-cert-publisher                                system:controller:service-ca-cert-publisher
+system:controller:service-controller                                       system:controller:service-controller
+system:controller:statefulset-controller                                   system:controller:statefulset-controller
+system:controller:ttl-after-finished-controller                            system:controller:ttl-after-finished-controller
+system:controller:ttl-controller                                           system:controller:ttl-controller
+system:deployer                                                            system:deployer
+system:discovery                                                           system:discovery
+system:image-builder                                                       system:image-builder
+openshift-image-registry-pruner                                            system:image-pruner
+system:image-puller                                                        system:image-puller
+system:kube-controller-manager                                             system:kube-controller-manager
+system:kube-dns                                                            system:kube-dns
+system:kube-scheduler                                                      system:kube-scheduler
+system:openshift:operator:kube-scheduler:public-2                          system:kube-scheduler
+system:masters                                                             system:master
+system:monitoring                                                          system:monitoring
+system:node                                                                system:node
+system:node-admins                                                         system:node-admin
+system:node-admin                                                          system:node-admin
+system-bootstrap-node-bootstrapper                                         system:node-bootstrapper
+system:node-bootstrapper                                                   system:node-bootstrapper
+system:node-proxiers                                                       system:node-proxier
+system:node-proxier                                                        system:node-proxier
+system:oauth-token-deleters                                                system:oauth-token-deleter
+system:openshift:controller:build-config-change-controller                 system:openshift:controller:build-config-change-controller
+system:openshift:controller:build-controller                               system:openshift:controller:build-controller
+system:openshift:controller:kube-apiserver-check-endpoints-crd-reader      system:openshift:controller:check-endpoints-crd-reader
+system:openshift:controller:kube-apiserver-check-endpoints-node-reader     system:openshift:controller:check-endpoints-node-reader
+system:openshift:controller:cluster-csr-approver-controller                system:openshift:controller:cluster-csr-approver-controller
+system:openshift:controller:cluster-quota-reconciliation-controller        system:openshift:controller:cluster-quota-reconciliation-controller
+system:openshift:controller:default-rolebindings-controller                system:openshift:controller:default-rolebindings-controller
+system:openshift:controller:deployer-controller                            system:openshift:controller:deployer-controller
+system:openshift:controller:deploymentconfig-controller                    system:openshift:controller:deploymentconfig-controller
+system:openshift:controller:horizontal-pod-autoscaler                      system:openshift:controller:horizontal-pod-autoscaler
+system:openshift:controller:image-import-controller                        system:openshift:controller:image-import-controller
+system:openshift:controller:image-trigger-controller                       system:openshift:controller:image-trigger-controller
+system:openshift:controller:machine-approver                               system:openshift:controller:machine-approver
+system:openshift:controller:namespace-security-allocation-controller       system:openshift:controller:namespace-security-allocation-controller
+system:openshift:controller:origin-namespace-controller                    system:openshift:controller:origin-namespace-controller
+system:openshift:controller:pv-recycler-controller                         system:openshift:controller:pv-recycler-controller
+system:openshift:controller:resourcequota-controller                       system:openshift:controller:resourcequota-controller
+system:openshift:controller:serviceaccount-controller                      system:openshift:controller:serviceaccount-controller
+system:openshift:controller:serviceaccount-pull-secrets-controller         system:openshift:controller:serviceaccount-pull-secrets-controller
+system:openshift:controller:service-ca                                     system:openshift:controller:service-ca
+system:openshift:controller:service-ingress-ip-controller                  system:openshift:controller:service-ingress-ip-controller
+system:openshift:controller:service-serving-cert-controller                system:openshift:controller:service-serving-cert-controller
+system:openshift:controller:template-instance-controller                   system:openshift:controller:template-instance-controller
+system:openshift:controller:template-instance-finalizer-controller         system:openshift:controller:template-instance-finalizer-controller
+system:openshift:controller:template-service-broker                        system:openshift:controller:template-service-broker
+system:openshift:controller:unidling-controller                            system:openshift:controller:unidling-controller
+system:openshift:discovery                                                 system:openshift:discovery
+system:openshift:kube-controller-manager:gce-cloud-provider                system:openshift:kube-controller-manager:gce-cloud-provider
+system:openshift:openshift-controller-manager                              system:openshift:openshift-controller-manager
+system:openshift:openshift-controller-manager:ingress-to-route-controller  system:openshift:openshift-controller-manager:ingress-to-route-controller
+system:openshift:openshift-controller-manager:update-buildconfig-status    system:openshift:openshift-controller-manager:update-buildconfig-status
+system:openshift:operator:cloud-controller-manager                         system:openshift:operator:cloud-controller-manager
+system:openshift:public-info-viewer                                        system:openshift:public-info-viewer
+system:openshift:tokenreview-openshift-controller-manager                  system:openshift:tokenreview-openshift-controller-manager
+system:openshift:useroauthaccesstoken-manager                              system:openshift:useroauthaccesstoken-manager
+system:public-info-viewer                                                  system:public-info-viewer
+registry-registry-role                                                     system:registry
+system:scope-impersonation                                                 system:scope-impersonation
+system:sdn-readers                                                         system:sdn-reader
+system:service-account-issuer-discovery                                    system:service-account-issuer-discovery
+system:volume-scheduler                                                    system:volume-scheduler
+system:webhooks                                                            system:webhook
+telemeter-client                                                           telemeter-client
+thanos-querier                                                             thanos-querier
+multus-whereabouts                                                         whereabouts-cni
+----
+=== Kubeadmin Secret
+
+.The user kubeadmin gets cluster-admin role automatically applied and is treated as the root user for the cluster. After installation and once an identity provider is configured is recommended to remove it.
+
+
+https://docs.openshift.com/container-platform/4.10/authentication/remove-kubeadmin.html[Reference Documentation]
+
+----
+----
+=== Identity Providers
+
+.By default, only a kubeadmin user exists on your cluster. Identity providers create a Custom Resource that describes that identity provider and add it to the cluster.
+
+
+https://docs.openshift.com/container-platform/4.10/authentication/identity_providers/configuring-htpasswd-identity-provider.html#identity-provider-overview_configuring-htpasswd-identity-provider[Reference Documentation]
+
+----
+[
+  {
+    "htpasswd": {
+      "fileData": {
+        "name": "htpass-secret"
+      }
+    },
+    "mappingMethod": "claim",
+    "name": "developer",
+    "type": "HTPasswd"
+  }
+]
+----
+=== Cluster Authentications
+
+.To interact with OCP, you must first authenticate to the cluster with a user associated in authorization layer by requests to the API.
+
+
+https://docs.openshift.com/container-platform/4.10/authentication/understanding-authentication.html[Reference Documentation]
+
+----
+{
+  "include.release.openshift.io/ibm-cloud-managed": "true",
+  "include.release.openshift.io/self-managed-high-availability": "true",
+  "include.release.openshift.io/single-node-developer": "true",
+  "release.openshift.io/create-only": "true"
+}
+{
+  "kubeConfig": {
+    "name": "webhook-authentication-integrated-oauth"
+  }
+}
+{
+  "integratedOAuthMetadata": {
+    "name": "oauth-openshift"
+  }
+}
+----
+=== Kubelet Configurations
+
+.OCP uses a KubeletConfig custom resource (CR) to manage the configuration of nodes that creates a managed machine config to override setting on the node.
+
+
+https://docs.openshift.com/container-platform/4.10/nodes/nodes/nodes-nodes-managing.html[Reference Documentation]
+
+----
+{
+    "apiVersion": "v1",
+    "items": [],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": "",
+        "selfLink": ""
+    }
+}
+----
+=== Cluster Subscriptions
+
+.Channels define a single event-forwarding and persistence layer. Events can be sent to multiple Knative services by using a subscription.
+
+
+https://docs.openshift.com/container-platform/4.10/serverless/discover/serverless-channels.html[Reference Documentation]
+
+----
+----
+=== WebHook Configurations
+
+.Webhooks allow Operator authors to intercept, modify, and accept or reject resources before they are saved to the object store and handled by the Operator controller.
+
+
+https://docs.openshift.com/container-platform/4.10/operators/understanding/olm/olm-webhooks.html[Reference Documentation]
+
+----
+{
+  "admissionReviewVersions": [
+    "v1"
+  ],
+  "clientConfig": {
+    "service": {
+      "name": "machine-api-operator-webhook",
+      "namespace": "openshift-machine-api",
+      "path": "/validate-machine-openshift-io-v1beta1-machine",
+      "port": 443
+    }
+  },
+  "failurePolicy": "Ignore",
+  "matchPolicy": "Equivalent",
+  "name": "validation.machine.machine.openshift.io",
+  "namespaceSelector": {},
+  "objectSelector": {},
+  "rules": [
+    {
+      "apiGroups": [
+        "machine.openshift.io"
+      ],
+      "apiVersions": [
+        "v1beta1"
+      ],
+      "operations": [
+        "CREATE",
+        "UPDATE"
+      ],
+      "resources": [
+        "machines"
+      ],
+      "scope": "*"
+    }
+  ],
+  "sideEffects": "None",
+  "timeoutSeconds": 10
+}
+{
+  "admissionReviewVersions": [
+    "v1"
+  ],
+  "clientConfig": {
+    "service": {
+      "name": "machine-api-operator-webhook",
+      "namespace": "openshift-machine-api",
+      "path": "/validate-machine-openshift-io-v1beta1-machineset",
+      "port": 443
+    }
+  },
+  "failurePolicy": "Ignore",
+  "matchPolicy": "Equivalent",
+  "name": "validation.machineset.machine.openshift.io",
+  "namespaceSelector": {},
+  "objectSelector": {},
+  "rules": [
+    {
+      "apiGroups": [
+        "machine.openshift.io"
+      ],
+      "apiVersions": [
+        "v1beta1"
+      ],
+      "operations": [
+        "CREATE",
+        "UPDATE"
+      ],
+      "resources": [
+        "machinesets"
+      ],
+      "scope": "*"
+    }
+  ],
+  "sideEffects": "None",
+  "timeoutSeconds": 10
+}
+{
+  "admissionReviewVersions": [
+    "v1"
+  ],
+  "clientConfig": {
+    "service": {
+      "name": "multus-admission-controller",
+      "namespace": "openshift-multus",
+      "path": "/validate",
+      "port": 443
+    }
+  },
+  "failurePolicy": "Fail",
+  "matchPolicy": "Equivalent",
+  "name": "multus-validating-config.k8s.io",
+  "namespaceSelector": {},
+  "objectSelector": {},
+  "rules": [
+    {
+      "apiGroups": [
+        "k8s.cni.cncf.io"
+      ],
+      "apiVersions": [
+        "v1"
+      ],
+      "operations": [
+        "CREATE",
+        "UPDATE"
+      ],
+      "resources": [
+        "network-attachment-definitions"
+      ],
+      "scope": "*"
+    }
+  ],
+  "sideEffects": "NoneOnDryRun",
+  "timeoutSeconds": 30
+}
+{
+  "admissionReviewVersions": [
+    "v1"
+  ],
+  "clientConfig": {
+    "service": {
+      "name": "prometheus-operator",
+      "namespace": "openshift-monitoring",
+      "path": "/admission-prometheusrules/validate",
+      "port": 8080
+    }
+  },
+  "failurePolicy": "Ignore",
+  "matchPolicy": "Equivalent",
+  "name": "prometheusrules.openshift.io",
+  "namespaceSelector": {},
+  "objectSelector": {},
+  "rules": [
+    {
+      "apiGroups": [
+        "monitoring.coreos.com"
+      ],
+      "apiVersions": [
+        "v1"
+      ],
+      "operations": [
+        "CREATE",
+        "UPDATE"
+      ],
+      "resources": [
+        "prometheusrules"
+      ],
+      "scope": "Namespaced"
+    }
+  ],
+  "sideEffects": "None",
+  "timeoutSeconds": 5
+}
+----
+=== Mutating WebHook Configurations
+
+----
+{
+  "admissionReviewVersions": [
+    "v1"
+  ],
+  "clientConfig": {
+    "service": {
+      "name": "machine-api-operator-webhook",
+      "namespace": "openshift-machine-api",
+      "path": "/mutate-machine-openshift-io-v1beta1-machine",
+      "port": 443
+    }
+  },
+  "failurePolicy": "Ignore",
+  "matchPolicy": "Equivalent",
+  "name": "default.machine.machine.openshift.io",
+  "namespaceSelector": {},
+  "objectSelector": {},
+  "reinvocationPolicy": "Never",
+  "rules": [
+    {
+      "apiGroups": [
+        "machine.openshift.io"
+      ],
+      "apiVersions": [
+        "v1beta1"
+      ],
+      "operations": [
+        "CREATE"
+      ],
+      "resources": [
+        "machines"
+      ],
+      "scope": "*"
+    }
+  ],
+  "sideEffects": "None",
+  "timeoutSeconds": 10
+}
+{
+  "admissionReviewVersions": [
+    "v1"
+  ],
+  "clientConfig": {
+    "service": {
+      "name": "machine-api-operator-webhook",
+      "namespace": "openshift-machine-api",
+      "path": "/mutate-machine-openshift-io-v1beta1-machineset",
+      "port": 443
+    }
+  },
+  "failurePolicy": "Ignore",
+  "matchPolicy": "Equivalent",
+  "name": "default.machineset.machine.openshift.io",
+  "namespaceSelector": {},
+  "objectSelector": {},
+  "reinvocationPolicy": "Never",
+  "rules": [
+    {
+      "apiGroups": [
+        "machine.openshift.io"
+      ],
+      "apiVersions": [
+        "v1beta1"
+      ],
+      "operations": [
+        "CREATE"
+      ],
+      "resources": [
+        "machinesets"
+      ],
+      "scope": "*"
+    }
+  ],
+  "sideEffects": "None",
+  "timeoutSeconds": 10
+}
+----
+=== API Versions
+
+==== Verification of API files permissions
+----
+/etc/kubernetes/static-pod-resources/kube-apiserver-pod.yaml: [OK]
+/etc/kubernetes/static-pod-resources/kube-controller-manager-pod.yaml: [OK]
+/etc/kubernetes/static-pod-resources/kube-scheduler-pod.yaml: [OK]
+/etc/kubernetes/manifests/etcd-pod.yaml: [OK]
+----
+== storage
+
+.OCP uses persistent storage known as Persisten Volumes that allow you to access storage devices.
+
+
+https://docs.openshift.com/container-platform/4.10/storage/understanding-persistent-storage.html#persistent-storage-overview_understanding-persistent-storage[Reference Documentation]
+
+=== Failed Persistent Volumes
+
+----
+----
+=== Pending Persistent Volumes
+
+----
+----
+=== Released Persistent Volumes
+
+----
+----
+.OCP uses persistent storage claims to control request of persistent volumes.
+
+
+https://docs.openshift.com/container-platform/4.10/storage/understanding-persistent-storage.html#persistent-volume-claims_understanding-persistent-storage[Reference Documentation]
+
+=== Lost Persistent Volumes Claims
+
+----
+----
+=== Pending Persistent Volumes Claims
+
+----
+----
+=== Storage Classes
+
+.Claims can optionally request a specific storage class. Only PVs of the requested class, ones with the same storageClassName as the PVC, can be bound to the PVC.
+
+
+https://docs.openshift.com/container-platform/4.10/storage/understanding-persistent-storage.html#pvc-storage-class_understanding-persistent-storage[Reference Documentation]
+
+----
+----
+=== Quotas
+
+.A resource quota provides constraints that limit aggregate resource consumption per project. It can limit the total amount of compute resources and storage that might be consumed by resources in that project.
+
+
+https://docs.openshift.com/container-platform/4.10/applications/quotas/quotas-setting-per-project.html[Reference Documentation]
+
+----
+NAMESPACE                NAME                            AGE   REQUEST                                                              LIMIT
+openshift-host-network   host-network-namespace-quotas   42d   count/daemonsets.apps: 0/0, count/deployments.apps: 0/0, pods: 0/0   limits.cpu: 0/0, limits.memory: 0/0
+----
+=== Volume Snapshots
+
+.A snapshot represents the state of the storage volume in a cluster at a particular point in time. Volume snapshots can be used to provision a new volume.
+
+
+https://docs.openshift.com/container-platform/4.10/storage/container_storage_interface/persistent-storage-csi-snapshots.html[Reference Documentation]
+
+----
+----
+=== CSI Drivers
+
+.CSI Drivers provision inline ephemeral volumes that contain the contents of Secret or ConfigMap objects.
+
+
+https://docs.openshift.com/container-platform/4.10/storage/container_storage_interface/ephemeral-storage-shared-resource-csi-driver-operator.html[Reference Documentation]
+
+----
+----
+=== CSI Nodes
+
+----
+NAME                DRIVERS  AGE
+crc-5nvrm-master-0  0        42d
+----
+=== Feature Gates
+
+.FeatureGates enable specific feature sets in your cluster. A feature set is a collection of OpenShift Container Platform features that are not enabled by default.
+
+
+https://docs.openshift.com/container-platform/4.10/nodes/clusters/nodes-cluster-enabling-features.html[Reference Documentation]
+
+----
+----
+=== Horizontal Pod AutoScalers
+
+.You can create a horizontal pod autoscaler to specify the minimum and maximum number of pods you want to run, as well as the CPU utilization or memory utilization your pods should target.
+
+
+https://docs.openshift.com/container-platform/4.10/nodes/pods/nodes-pods-autoscaling.html[Reference Documentation]
+
+----
+----
+== logging
+
+=== Logging Resources
+
+.The logging subsystem aggregates all the logs from the cluster and stores them in a default log store. You can use the Kibana web console to visualize log data.
+
+
+https://docs.openshift.com/container-platform/4.10/logging/cluster-logging.html[Reference Documentation]
+
+----
+----
+== Monitoring
+
+=== Prometheus Status
+
+.The monitoring stack provides monitoring for core platform components. You also have the option to enable monitoring for user-defined projects.
+
+
+https://docs.openshift.com/container-platform/4.10/monitoring/monitoring-overview.html[Reference Documentation]
+
+----
+prometheus-adapter-6dbdddc76b-bdr2v            1/1     Running   0          44h
+prometheus-k8s-0                               6/6     Running   0          44h
+prometheus-operator-76f79c8d85-xn57s           2/2     Running   0          44h
+----
+=== Prometheus Context
+
+----
+{"fsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}
+"15d"
+{"requests":{"cpu":"70m","memory":"1Gi"}}
+----
+=== Prometheus Rules
+
+.Users can then create and configure user-defined alert routing by creating or editing the AlertmanagerConfig objects.
+
+
+https://docs.openshift.com/container-platform/4.10/monitoring/enabling-alert-routing-for-user-defined-projects.html[Reference Documentation]
+
+==== openshift-cloud-credential-operator cloud-credential-operator-alerts
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-cluster-machine-approver machineapprover-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-cluster-node-tuning-operator node-tuning-operator
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-cluster-samples-operator samples-operator-alerts
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-cluster-version cluster-version-operator
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-dns-operator dns
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-etcd-operator etcd-prometheus-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-image-registry image-registry-operator-alerts
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-ingress-operator ingress-operator
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-insights insights-prometheus-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-kube-apiserver-operator kube-apiserver-operator
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-kube-apiserver api-usage
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-kube-apiserver audit-errors
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-kube-apiserver cpu-utilization
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-kube-apiserver kube-apiserver-requests
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-kube-apiserver kube-apiserver-slos-basic
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-kube-controller-manager-operator kube-controller-manager-operator
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-kube-scheduler-operator kube-scheduler-operator
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-machine-api machine-api-operator-prometheus-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-machine-config-operator machine-config-daemon
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-marketplace marketplace-alert-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-monitoring alertmanager-main-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-monitoring cluster-monitoring-operator-prometheus-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-monitoring kube-state-metrics-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-monitoring kubernetes-monitoring-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-monitoring node-exporter-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-monitoring prometheus-k8s-prometheus-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-monitoring prometheus-k8s-thanos-sidecar-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-monitoring prometheus-operator-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-monitoring telemetry
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-monitoring thanos-querier
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-multus prometheus-k8s-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-operator-lifecycle-manager olm-alert-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+==== openshift-sdn networking-rules
+----
+NodeWithoutSDNController{severity:warning}
+NodeWithoutSDNPod{severity:warning}
+NodeProxyApplySlow{severity:warning}
+ClusterProxyApplySlow{severity:warning}
+NodeProxyApplyStale{severity:warning}
+SDNPodNotReady{severity:warning}
+----
+=== Service Monitors
+
+.Cluster components are monitored by scraping metrics exposed through service endpoints. You can also configure metrics collection for user-defined projects.
+
+
+https://docs.openshift.com/container-platform/4.10/monitoring/managing-metrics.html[Reference Documentation]
+
+----
+NAMESPACE                                   NAME
+openshift-apiserver-operator                openshift-apiserver-operator
+openshift-apiserver                         openshift-apiserver
+openshift-apiserver                         openshift-apiserver-operator-check-endpoints
+openshift-authentication-operator           authentication-operator
+openshift-authentication                    oauth-openshift
+openshift-cloud-credential-operator         cloud-credential-operator
+openshift-cluster-machine-approver          cluster-machine-approver
+openshift-cluster-node-tuning-operator      node-tuning-operator
+openshift-cluster-samples-operator          cluster-samples-operator
+openshift-cluster-storage-operator          cluster-storage-operator
+openshift-cluster-version                   cluster-version-operator
+openshift-config-operator                   config-operator
+openshift-console-operator                  console-operator
+openshift-console                           console
+openshift-controller-manager-operator       openshift-controller-manager-operator
+openshift-controller-manager                openshift-controller-manager
+openshift-dns-operator                      dns-operator
+openshift-dns                               dns-default
+openshift-etcd-operator                     etcd-operator
+openshift-image-registry                    image-registry
+openshift-image-registry                    image-registry-operator
+openshift-ingress-operator                  ingress-operator
+openshift-ingress                           router-default
+openshift-insights                          insights-operator
+openshift-kube-apiserver-operator           kube-apiserver-operator
+openshift-kube-apiserver                    kube-apiserver
+openshift-kube-controller-manager-operator  kube-controller-manager-operator
+openshift-kube-controller-manager           kube-controller-manager
+openshift-kube-scheduler-operator           kube-scheduler-operator
+openshift-kube-scheduler                    kube-scheduler
+openshift-machine-api                       cluster-autoscaler-operator
+openshift-machine-api                       machine-api-controllers
+openshift-machine-api                       machine-api-operator
+openshift-machine-config-operator           machine-config-daemon
+openshift-marketplace                       marketplace-operator
+openshift-monitoring                        alertmanager-main
+openshift-monitoring                        cluster-monitoring-operator
+openshift-monitoring                        etcd
+openshift-monitoring                        grafana
+openshift-monitoring                        kube-state-metrics
+openshift-monitoring                        kubelet
+openshift-monitoring                        node-exporter
+openshift-monitoring                        openshift-state-metrics
+openshift-monitoring                        prometheus-adapter
+openshift-monitoring                        prometheus-k8s
+openshift-monitoring                        prometheus-operator
+openshift-monitoring                        telemeter-client
+openshift-monitoring                        thanos-querier
+openshift-monitoring                        thanos-sidecar
+openshift-multus                            monitor-multus-admission-controller
+openshift-multus                            monitor-network
+openshift-network-diagnostics               network-check-source
+openshift-oauth-apiserver                   openshift-oauth-apiserver
+openshift-operator-lifecycle-manager        catalog-operator
+openshift-operator-lifecycle-manager        olm-operator
+openshift-sdn                               monitor-sdn
+openshift-sdn                               monitor-sdn-controller
+openshift-service-ca-operator               service-ca-operator
+----
+=== Pod Monitors
+
+----
+----
+=== Alert Managers
+
+----
+NAMESPACE              NAME   VERSION   REPLICAS   AGE
+openshift-monitoring   main   0.23.0    1          44h
+----
+=== Monitoring Agents & Dashboards
+
+[%header,cols='3,1']
+|===
+|Agent|Status
+|cluster-monitoring-operator|OK
+|kube-state-metrics|OK
+|openshift-state-metrics|OK
+|node-exporter|OK
+|thanos-querier|OK
+|grafana|OK
+|telemeter-client|OK
+|===
+== network
+
+=== Enabled Networks
+
+.By default, OCP allocates each pod an internal IP address and Pods and their containers can network, but clients outside the cluster do not have networking access.
+
+
+https://docs.openshift.com/container-platform/4.10/networking/understanding-networking.html[Reference Documentation]
+
+----
+{
+  "clusterNetwork": [
+    {
+      "cidr": "10.217.0.0/22",
+      "hostPrefix": 23
+    }
+  ],
+  "externalIP": {
+    "policy": {}
+  },
+  "networkType": "OpenShiftSDN",
+  "serviceNetwork": [
+    "10.217.4.0/23"
+  ]
+}
+----
+=== Network Policies
+
+.In a cluster using a Kubernetes Container Network Interface (CNI) plug-in that supports Kubernetes network policy, network isolation is controlled entirely by NetworkPolicy objects.
+
+
+https://docs.openshift.com/container-platform/4.10/networking/network_policy/about-network-policy.html[Reference Documentation]
+
+=== Cluster Networks
+
+.ClusterNetwork describes the cluster network. There is normally only one object of this type, named 'default', which is created by the SDN network plugin based on the master configuration when the cluster is brought up for the first time.
+
+
+https://docs.openshift.com/container-platform/4.10/rest_api/network_apis/clusternetwork-network-openshift-io-v1.html[Reference Documentation]
+
+----
+NAME      CLUSTER NETWORK   SERVICE NETWORK   PLUGIN NAME
+default   10.217.0.0/22     10.217.4.0/23     redhat/openshift-ovs-networkpolicy
+----
+=== Host Subnets
+
+.HostSubnet describes the container subnet network on a node. The HostSubnet object must have the same name as the Node object it corresponds to.
+
+
+https://docs.openshift.com/container-platform/4.10/rest_api/network_apis/hostsubnet-network-openshift-io-v1.html[Reference Documentation]
+
+----
+NAME                 HOST                 HOST IP          SUBNET          EGRESS CIDRS   EGRESS IPS
+crc-5nvrm-master-0   crc-5nvrm-master-0   192.168.126.11   10.217.0.0/23                  
+----
+=== Cluster Proxy
+
+.If a global proxy is configured on the OpenShift Container Platform cluster, OLM automatically configures Operators that it manages with the cluster-wide proxy.
+
+
+https://docs.openshift.com/container-platform/4.10/operators/admin/olm-configuring-proxy-support.html[Reference Documentation]
+
+----
+{
+  "apiVersion": "config.openshift.io/v1",
+  "kind": "Proxy",
+  "metadata": {
+    "creationTimestamp": "2022-06-21T06:10:05Z",
+    "generation": 1,
+    "name": "cluster",
+    "resourceVersion": "620",
+    "uid": "39f7fd6d-ae80-4a34-aa95-a711527601e0"
+  },
+  "spec": {
+    "trustedCA": {
+      "name": ""
+    }
+  },
+  "status": {}
+}
+----
+=== Network Endpoints
+
+----
+NAMESPACE NAME 
+ 		 ENDPOINTS
+default kubernetes 
+ 		 192.168.126.11:6443
+kube-system kubelet 
+ 		 192.168.126.11:10250,192.168.126.11:10255,192.168.126.11:4194
+ocapp-test my-service 
+ 		 <none>
+openshift-apiserver-operator metrics 
+ 		 10.217.0.44:8443
+openshift-apiserver api 
+ 		 10.217.0.24:8443
+openshift-apiserver check-endpoints 
+ 		 10.217.0.24:17698
+openshift-authentication-operator metrics 
+ 		 10.217.0.32:8443
+openshift-authentication oauth-openshift 
+ 		 10.217.0.23:6443
+openshift-cloud-credential-operator cco-metrics 
+ 		 <none>
+----
+=== Routes
+
+.A route allows you to host your application at a public URL. It can either be secure or unsecured, depending on the network security configuration of your application.
+
+
+https://docs.openshift.com/container-platform/4.10/networking/routes/route-configuration.html[Reference Documentation]
+
+----
+NAMESPACE NAME 
+ 		 HOST/PORT PATH SERVICES PORT TERMINATION WILDCARD
+ocapp-test my-service 
+ 		 my-service-ocapp-test.apps-crc.testing my-service 8080-8080 None  
+openshift-authentication oauth-openshift 
+ 		 oauth-openshift.apps-crc.testing oauth-openshift 6443 passthrough/Redirect None 
+openshift-console console 
+ 		 console-openshift-console.apps-crc.testing console https reencrypt/Redirect None 
+openshift-console downloads 
+ 		 downloads-openshift-console.apps-crc.testing downloads http edge/Redirect None 
+openshift-image-registry default-route 
+ 		 default-route-openshift-image-registry.apps-crc.testing image-registry <all> reencrypt None 
+openshift-ingress-canary canary 
+ 		 canary-openshift-ingress-canary.apps-crc.testing ingress-canary 8080 edge/Redirect None 
+openshift-monitoring alertmanager-main 
+ 		 alertmanager-main-openshift-monitoring.apps-crc.testing /api alertmanager-main web reencrypt/Redirect None
+openshift-monitoring grafana 
+ 		 grafana-openshift-monitoring.apps-crc.testing grafana https reencrypt/Redirect None 
+openshift-monitoring prometheus-k8s 
+ 		 prometheus-k8s-openshift-monitoring.apps-crc.testing prometheus-k8s web reencrypt/Redirect None 
+openshift-monitoring thanos-querier 
+ 		 thanos-querier-openshift-monitoring.apps-crc.testing /api thanos-querier web reencrypt/Redirect None
+----
+=== Egress Network Policy
+
+.You can create an egress firewall for a project that restricts egress traffic leaving your OpenShift Container Platform cluster.
+
+
+https://docs.openshift.com/container-platform/4.10/networking/openshift_sdn/configuring-egress-firewall.html[Reference Documentation]
+
+----
+----
+=== Ingress Controllers
+
+.OpenShift Container Platform provides methods for communicating from outside the cluster with services running in the cluster. This method uses an Ingress Controller.
+
+
+https://docs.openshift.com/container-platform/4.10/networking/nw-ingress-controller-endpoint-publishing-strategies.html[Reference Documentation]
+
+==== default
+
+- "The deployment has Available status condition set to True"
+- "Minimum replicas requirement is met"
+- "All replicas are available"
+- "The configured endpoint publishing strategy does not include a managed load balancer"
+- "No DNS zones are defined in the cluster dns config."
+- "IngressController is upgradeable."
+- "Canary route checks for the default ingress controller are successful"
+
+=== Ingresses
+
+.OpenShift Container Platform provides methods for communicating from outside the cluster with services running in the cluster. This method uses an Ingress Controller.
+
+
+https://docs.openshift.com/container-platform/4.10/networking/configuring_ingress_cluster_traffic/configuring-ingress-cluster-traffic-ingress-controller.html[Reference Documentation]
+
+----
+----
+=== Ingress Controler Pods
+
+.OpenShift Container Platform provides methods for communicating from outside the cluster with services running in the cluster. This method uses an Ingress Controller.
+
+
+https://docs.openshift.com/container-platform/4.10/networking/configuring_ingress_cluster_traffic/configuring-ingress-cluster-traffic-ingress-controller.html[Reference Documentation]
+
+**router-default-7b7c555897-2zb4s**
+**haproxy.conf Configuration file is valid**
+----
+SSL Configurations:
+  ssl-default-bind-options ssl-min-ver TLSv1.2
+  ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+  ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+Frontends:
+  bind :80
+  bind :443
+Backends:
+backend be_sni
+backend be_no_sni
+backend openshift_default
+backend be_http:ocapp-test:my-service
+backend be_tcp:openshift-authentication:oauth-openshift
+backend be_secure:openshift-console:console
+backend be_edge_http:openshift-console:downloads
+backend be_secure:openshift-image-registry:default-route
+backend be_edge_http:openshift-ingress-canary:canary
+backend be_secure:openshift-monitoring:alertmanager-main
+backend be_secure:openshift-monitoring:grafana
+backend be_secure:openshift-monitoring:prometheus-k8s
+backend be_secure:openshift-monitoring:thanos-querier
+----
+=== Pod Network Connectivity Check
+
+.The Cluster Network Operator runs a controller that performs a connection health check between resources within your cluster. By reviewing the results of the health checks, you can diagnose connection problems or eliminate network connectivity as the cause of an issue that you are investigating.
+
+
+https://docs.openshift.com/container-platform/4.10/networking/verifying-connectivity-endpoint.html#nw-pod-network-connectivity-checks_verifying-connectivity-endpoint[Reference Documentation]
+
+[%header,cols='4,1']
+|===
+|POD|STATUS
+|NAME|
+|network-check-source-crc-5nvrm-master-0-to-kubernetes-apiserver-endpoint-crc-5nvrm-master-0|Reachable
+|network-check-source-crc-5nvrm-master-0-to-kubernetes-apiserver-service-cluster|Reachable
+|network-check-source-crc-5nvrm-master-0-to-kubernetes-default-service-cluster|Reachable
+|network-check-source-crc-5nvrm-master-0-to-load-balancer-api-external|Reachable
+|network-check-source-crc-5nvrm-master-0-to-load-balancer-api-internal|Reachable
+|network-check-source-crc-5nvrm-master-0-to-network-check-target-crc-5nvrm-master-0|Reachable
+|network-check-source-crc-5nvrm-master-0-to-network-check-target-service-cluster|Reachable
+|network-check-source-crc-5nvrm-master-0-to-openshift-apiserver-endpoint-crc-5nvrm-master-0|Reachable
+|network-check-source-crc-5nvrm-master-0-to-openshift-apiserver-service-cluster|Reachable
+|===
+== operators
+
+=== Degraded Cluster Operators
+
+.Operators are a method of packaging, deploying, and managing an OpenShift Container Platform application. They act like an extension of the software vendor’s engineering team, watching over an OpenShift Container Platform environment and using its current state to make decisions in real time.
+
+
+https://docs.openshift.com/container-platform/4.10/support/troubleshooting/troubleshooting-operator-issues.html[Reference Documentation]
+
+----
+----
+=== Unavailable Cluster Operators
+
+.Operators are a method of packaging, deploying, and managing an OpenShift Container Platform application. They act like an extension of the software vendor’s engineering team, watching over an OpenShift Container Platform environment and using its current state to make decisions in real time.
+
+
+https://docs.openshift.com/container-platform/4.10/support/troubleshooting/troubleshooting-operator-issues.html[Reference Documentation]
+
+----
+----
+=== Cluster Services Versions
+
+.A cluster service version (CSV), is a YAML manifest created from Operator metadata that assists Operator Lifecycle Manager (OLM) in running the Operator in a cluster.
+
+
+https://docs.openshift.com/container-platform/4.10/operators/operator_sdk/osdk-generating-csvs.html[Reference Documentation]
+
+----
+NAMESPACE                              NAME            DISPLAY          VERSION   REPLACES   PHASE
+openshift-operator-lifecycle-manager   packageserver   Package Server   0.19.0               Succeeded
+----
+=== Operator Groups
+
+.An Operator group, defined by the OperatorGroup resource, provides multitenant configuration to OLM-installed Operators. An Operator group selects target namespaces in which to generate required RBAC access for its member Operators.
+
+
+https://docs.openshift.com/container-platform/4.10/operators/understanding/olm/olm-understanding-operatorgroups.html[Reference Documentation]
+
+----
+NAMESPACE                              NAME                           AGE
+openshift-monitoring                   openshift-cluster-monitoring   42d
+openshift-operator-lifecycle-manager   olm-operators                  42d
+openshift-operators                    global-operators               42d
+----
+=== Operator Sources
+
+----
+----
+== Applications
+
+=== Non-Ready Deployments
+
+----
+NAMESPACE   NAME     READY  UP-TO-DATE  AVAILABLE  AGE
+ocapp-test  my-app2  0/1    0           0          14d
+ocapp-test  my-app3  0/1    0           0          14d
+----
+=== Unavailable Deployments
+
+----
+NAMESPACE   NAME     READY  UP-TO-DATE  AVAILABLE  AGE
+ocapp-test  my-app2  0/1    0           0          14d
+ocapp-test  my-app3  0/1    0           0          14d
+----
+=== Failed Builds
+
+----
+----
+=== Inactive projects
+
+----
+----
