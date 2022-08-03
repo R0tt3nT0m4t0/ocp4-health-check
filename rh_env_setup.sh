@@ -3,94 +3,133 @@
 # Author: jumedina@redhat.com 
 # 
 
-work_dir='~/redhat_work'
-bin_dir=${work_dir}/bin 
+# -------------------------
+# Setting up working directory
+# -------------------------
 
-# Backup if there is an old working directory 
-mv ${work_dir} ${work_dir}.$(date +"%m%d%y")
-# Create the new working structure 
-mkdir -p ${bin}
-# Setup OC CLI and auto-completion for bash
-# If root enable X forwarding 
-# Setup vim 
-# Setup terminator 
-# Setup git 
-# Install Kustomize 
-# What else? 
+bin_dir="${HOME}/bin/"
+mkdir -p ${bin_dir}
 
-- name: Ensure /usr/bin/oc responds 
-  ansible.builtin.stat:
-    path: /usr/bin/oc
-  register: oc_stat
+# -------------------------
+# Setting up .vimrc 
+# -------------------------
+cat << EOF > ~/.vimrc
+set nocompatible
+set number
+set cursorline
+set cursorcolumn
+set shiftwidth=3
+set tabstop=3
+set softtabstop=3
+set expandtab
+set nobackup
+set scrolloff=10
+set nowrap
+set incsearch
+set ignorecase
+set smartcase
+set showcmd
+set showmode
+set showmatch
+set hlsearch
+set history=1000
+set wildmenu
+set wildmode=list:longest
+set paste
+set wildignore=*.docx,*.jpg,*.png,*.gif,*.pdf,*.pyc,*.exe,*.flv,*.img,*.xlsx
+set backspace=indent,eol,start
+set gcr=a:blinkon0
+set visualbell
+set autoread
+set hidden
+set autoindent
+set expandtab
+set scrolloff=8
+set sidescrolloff=15
+set sidescroll=1
+filetype on
+filetype plugin on
+filetype indent on 
+syntax on
+colorscheme murphy 
 
-- when: not (oc_stat.stat.exists)
-  block: 
-    - name: Ensure {{ work_dir }}/bin Exists
-      ansible.builtin.file:
-        path: "{{ bin_dir }}"
-        mode: 0775
-        state: directory
-    - name: Install oc if not available
-      ansible.builtin.unarchive:
-        src: "{{ openshift_cli_url }}"
-        remote_src: yes
-        dest: "{{ bin_dir }}"
-        mode: 775
-        exclude:
-          - README.md
+EOF 
 
-  tasks:
-  - name: "{{m1}} vim" 
-    ansible.builtin.dnf:
-      name: vim
-      state: latest
-  - name: "{{m2}} vim"
-    ansible.builtin.copy:
-      src: vimrc
-      dest: "/home/{{ username }}/.vimrc"
-      mode: '0644'
-      owner: "{{ username }}"
-      group: "{{ username }}"
-  - name: "{{m1}} geany"
-    ansible.builtin.dnf:
-      name: 
-        - geany
-        - geany-plugins*
-      state: latest 
+# -------------------------
+# Setup tools
+# -------------------------
+sudo dnf install -y git bash-completion jq vim podman tree 
 
-  - name: "{{m1}} Terminator"
-    ansible.builtin.dnf:
-      name: terminator 
-      state: latest
+cp ~/.bashrc ~/.bashrc_beforeRH
 
-  - name: "Creating terminator config folder"
-    ansible.builtin.file:
-      path: "/home/{{ username }}/.config/terminator/"
-      state: directory
-      mode: 0644
-      owner: "{{ username }}"
-      group: "{{ username }}"
+cat << EOF > ~/.bashrc 
+# Bash Completion Configuration
+if [[ -f /usr/share/bash-completion/bash_completion ]]
+then
+  . /usr/share/bash-completion/bash_completion
+fi
 
-  - name: "{{m2}} Terminator"
-    ansible.builtin.copy:
-      src: terminator/config 
-      dest: "/home/{{ username }}/.config/terminator/config"
-      mode: 0644 
-      owner: "{{ username }}"
-      group: "{{ username }}"
-      
-      
-  - name: "{{m1}} Podman"
-    ansible.builtin.dnf:
-      name: podman  
-      state: latest
-      
-      
-  - name: "{{m1}} Git"
-    ansible.builtin.dnf:
-      name: git 
-      state: latest
-      
-      
-      
-      
+EOF 
+
+# -------------------------
+# Setup Kustomize
+# -------------------------
+
+cd ${bin_dir} 
+curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash 
+
+# -------------------------
+# Setup OC CLI 
+# -------------------------
+wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz  
+tar -xvzf openshift-client-linux.tar.gz
+rm -rf openshift-client-linux.tar.gz
+
+cat << EOF > ~/.bashrc 
+
+# OC Completion Configuration
+if [ command -v oc &>/dev/null ]
+then
+  source <(oc completion bash)
+fi
+
+# kubectl Completion Configuration
+if [ command -v kubectl &>/dev/null ]
+then
+  source <(kubectl completion bash)
+fi
+
+alias k=kubectl
+complete -o default -F __start_kubectl k
+
+EOF 
+
+source ~/.bashrc
+
+oc version 
+kubectl version 
+kustomize version 
+
+
+# --------------------------------------------------
+# Optional and manually preferred installations
+# --------------------------------------------------
+
+# -------------------------
+# Enable X11 Forwarding over SSH
+# -------------------------
+# grep X11Forwarding /etc/ssh/sshd_config &>/dev/null 
+# sudo dnf install -y xauth 
+# cp /etc/sshd/sshd_config /etc/sshd/sshd_config_beforex11
+# sed -i 's/X11Forwarding no/X11Forwarding no/g' /etc/sshd/sshd_config
+# grep X11Forwarding /etc/ssh/sshd_config
+# sudo systemctl restart sshd.service 
+
+# -------------------------
+# Install and setup asciidocs
+# -------------------------
+# sudo dnf install -y asciidoctor ruby
+# gem install asciidoctor-pdf --pre 
+# gem install asciidoctor-diagram --pre 
+
+echo "Execute 'source ~/.bashrc' to load environment changes in current session" 

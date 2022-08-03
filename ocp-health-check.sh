@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # Openshift 4 Health Check Report Generator 
 # Author: jumedina@redhat.com 
+# -------------------------
+# Install and setup asciidocs
+# -------------------------
+# sudo dnf install -y asciidoctor ruby
+# gem install asciidoctor-pdf --pre 
+# gem install asciidoctor-diagram --pre 
 
 # Global Variables 
 
@@ -38,7 +44,7 @@ environment_setup(){
    echo ":toc:" >> ${adoc}
    echo ":numbered:" >> ${adoc}
    echo ":doctype: book" >> ${adoc}
-   echo ":imagesdir: ../images" >> ${adoc}
+   echo ":imagesdir: ../images/" >> ${adoc}
    echo ":stylesdir: ../styles/" >> ${adoc}
    echo ":listing-caption: Listing" >> ${adoc}
    echo ":pdf-page-size: A4" >> ${adoc}
@@ -48,6 +54,9 @@ environment_setup(){
    echo "" >> ${adoc}
    echo "= Openshift 4 Health Check Report" >> ${adoc}
    echo "" >> ${adoc}
+
+   # Making sure the schrodingers-cat project doesn't exist 
+   oc delete project schrodingers-cat &>/dev/null 
 }
 
 generate_pdf(){
@@ -55,7 +64,7 @@ generate_pdf(){
    if [[ -d pdf ]]
    then 
       cd pdf
-      asciidoctor-pdf --verbose -r asciidoctor-diagram --out-file "../${report}" report.adoc
+      asciidoctor-pdf --verbose -r asciidoctor-diagram -o "../${report}" report.adoc 
    else
       echo "The `pdf` directory couldn't be found!"
       exit 
@@ -180,17 +189,20 @@ nodes(){
          echo "==== ${type} Nodes" >> ${adoc}
          for node in $(oc get nodes --no-headers | sed 's/,/ /g' | awk '{print $1, $3}' | grep ${type} | awk '{print $1}')
          do
-            echo "**${node}**" >> ${adoc}
-            code
-            #oc get node ${node} -o json | jq -r '.status.conditions[] | {type,status,reason}' >> ${adoc}
-            #oc describe node $node | grep "MemoryPressure|DiskPressure|PIDPressure" | grep -w True >> ${adoc}
-            oc get node ${node} -o json | \
+            results=$(oc get node ${node} -o json | \
                jq -cr '.status.conditions[] | {type,status,reason}' | \
                tr -d '{}"' | \
                sed 's/type://g; s/status://g; s/reason://g; s/,/ /g' | \
-               grep 'Pressure' >> ${adoc}
-            code
+               grep 'Pressure' | grep True)
+            if [ -z ${results+x} ]
+            then 
+               echo "**${node}**" >> ${adoc}
+               code
+               echo ${results} >> ${adoc}
+               code
+            fi
          done
+         echo "" >> ${adoc}
       done
    }
 
@@ -241,7 +253,7 @@ nodes(){
       quote "A multi-project quota, defined by a ClusterResourceQuota object, allows quotas to be shared across multiple projects."
       link "https://docs.openshift.com/container-platform/${cv}/applications/quotas/quotas-setting-across-multiple-projects.html"
       code
-      oc get clusterserviceversions.operators.coreos.com -A 2>/dev/null >> ${adoc}
+      oc get clusterserviceversions.operators.coreos.com -A 2>/dev/null | grep -v Succeeded >> ${adoc}
       code 
    }
 
@@ -500,7 +512,7 @@ security(){
       quote "Binding, or adding, a role to users or groups gives the user or group the access that is granted by the role."
       link "https://docs.openshift.com/container-platform/${cv}/post_installation_configuration/preparing-for-users.html#adding-roles_post-install-preparing-for-users"
       code 
-      oc get clusterrolebindings | awk '{print $1,$2}' | sed 's/ClusterRole\///g' | sort -k2 | column -t >> ${adoc}
+      oc get clusterrolebindings | awk '{print $1,$2}' | sed 's/ClusterRole\///g' | sort -k2 >> ${adoc}
       code
    }
 
@@ -743,7 +755,7 @@ performance(){
       quote "All nodes meet the minimum requirements and are currently allocated to an amount appropriate to handle the workloads deployed to the cluster"
       link "https://docs.openshift.com/container-platform/${cv}/scalability_and_performance/planning-your-environment-according-to-object-maximums.html#cluster-maximums-environment_object-limits"
       code 
-      oc adm top nodes --no-headers | sort -nrk5 2>/dev/null | head -${limit} >> ${adoc}
+      oc adm top nodes --no-headers | sort -nrk5 2>/dev/null | head -${limit} | awk '{print $1,$4,$5}' >> ${adoc}
       code 
    }
 
@@ -753,7 +765,7 @@ performance(){
       quote "All nodes meet the minimum requirements and are currently allocated to an amount appropriate to handle the workloads deployed to the cluster"
       link "https://docs.openshift.com/container-platform/${cv}/scalability_and_performance/planning-your-environment-according-to-object-maximums.html#cluster-maximums-environment_object-limits"
       code 
-      oc adm top nodes --no-headers | sort -nrk3 2>/dev/null | head -${limit} >> ${adoc}
+      oc adm top nodes --no-headers | sort -nrk3 2>/dev/null | head -${limit} | awk '{print $1,$2,$3}' >> ${adoc}
       code 
    }
 
@@ -762,7 +774,7 @@ performance(){
       quote "As an administrator, you can view the pods in your cluster and to determine the health of those pods and the cluster as a whole."
       link "https://docs.openshift.com/container-platform/${cv}/nodes/pods/nodes-pods-viewing.html"
       code 
-      oc adm top pods -A --sort-by=memory 2>/dev/null | head -21 | column -t >> ${adoc}
+      oc adm top pods -A --sort-by=memory --no-headers 2>/dev/null | head -21 | column -t | awk '{print $1,$2,$4}' >> ${adoc}
       code 
    }
 
@@ -771,7 +783,7 @@ performance(){
       quote "As an administrator, you can view the pods in your cluster and to determine the health of those pods and the cluster as a whole."
       link "https://docs.openshift.com/container-platform/${cv}/nodes/pods/nodes-pods-viewing.html"
       code 
-      oc adm top pods -A --sort-by=cpu 2>/dev/null | head -21 | column -t >> ${adoc}
+      oc adm top pods -A --sort-by=cpu --no-headers 2>/dev/null | head -21 | column -t | awk '{print $1,$2,$3}' >> ${adoc}
       code 
    }
 
@@ -843,7 +855,7 @@ monitoring (){
          do 
             echo "==== ${LINE}" >> ${adoc}
             code 
-            oc get prometheusrules -n openshift-sdn networking-rules -o json | jq -c '.spec[][].rules[] | .alert,.labels' | tr -d "\n" | sed 's/}/}\n/g' | tr -d "\"" >> ${adoc}
+            oc get prometheusrules -n openshift-sdn networking-rules -o json 2>/dev/null | jq -c '.spec[][].rules[] | .alert,.labels' | tr -d "\n" | sed 's/}/}\n/g' | tr -d "\"" >> ${adoc}
             code 
          done < <(oc get prometheusrules -A --no-headers 2>/dev/null | awk '{print $1,$2}')
       fi 
@@ -983,7 +995,12 @@ network(){
       echo "|POD|STATUS" >> ${adoc}
       for pod in $(oc get podnetworkconnectivitycheck -n ${ns}  2>/dev/null | awk '{print $1}')
       do 
-         echo "|${pod}|$(oc get podnetworkconnectivitycheck ${pod} -n ${ns} -o json 2>/dev/null | jq '.status.conditions[].type' | tr -d '"' )" >> ${adoc}
+         status=$(oc get podnetworkconnectivitycheck ${pod} -n ${ns} -o json 2>/dev/null | \
+            jq '.status.conditions[].type' | tr -d '"' )
+         if [[ "Reachable" != ${status} ]]
+         then
+            echo "|${pod}|${status}" >> ${adoc}
+         fi
       done
       echo "|===" >> ${adoc}
    }
@@ -1017,7 +1034,7 @@ network(){
          while read LINE 
          do 
             echo "- ${LINE}" >> ${adoc}
-         done < <(oc get ingresscontrollers -n openshift-ingress-operator -o json | jq '.items[].status.conditions[] | .message' | grep -v null)
+         done < <(oc get ingresscontrollers -n openshift-ingress-operator -o json 2>/dev/null | jq '.items[].status.conditions[] | .message' | grep -vE "null|Reachable" )
          echo "" >> ${adoc}
       done 
    }
@@ -1035,31 +1052,36 @@ network(){
       sub "Ingress Controler Pods"
       quote "OpenShift Container Platform provides methods for communicating from outside the cluster with services running in the cluster. This method uses an Ingress Controller."
       link "https://docs.openshift.com/container-platform/${cv}/networking/configuring_ingress_cluster_traffic/configuring-ingress-cluster-traffic-ingress-controller.html"
-      for pod in $(oc get pods -n openshift-ingress --no-headers | awk '{print $1}')
-      do
-         echo "**${pod}**" >> ${adoc}
-         echo "**haproxy.conf $(oc exec -n openshift-ingress ${pod} -- haproxy -c -f haproxy.config)**" >> ${adoc}
-         code 
-         echo "SSL Configurations:" >> ${adoc}
-         oc exec -n openshift-ingress ${pod} -- grep ssl-default-bind haproxy.config >> ${adoc}
-         echo "Frontends:" >> ${adoc}
-         oc exec -n openshift-ingress ${pod} -- sed -n '/^defaults/,/\Z/p' haproxy.config | grep -wE "frontend |bind |default_backend "  >> ${adoc}
-         echo "Backends:" >> ${adoc}
-         oc exec -n openshift-ingress ${pod} -- grep -e ^backend haproxy.config >> ${adoc}
-         code 
+      for ingctl in $(oc get ingresscontrollers -n openshift-ingress-operator --no-headers | awk '{print $1}')
+      do 
+         for pod in $(oc get pods -n openshift-ingress --no-headers | grep ${ingctl} | head -1 | awk '{print $1}')
+         do
+            echo "**${pod}**" >> ${adoc}
+            echo "**haproxy.conf $(oc exec -n openshift-ingress ${pod} -- haproxy -c -f haproxy.config)**" >> ${adoc}
+            code 
+            echo "SSL Configurations:" >> ${adoc}
+            oc exec -n openshift-ingress ${pod} -- grep ssl-default-bind haproxy.config >> ${adoc}
+            echo "Frontends:" >> ${adoc}
+            oc exec -n openshift-ingress ${pod} -- sed -n '/^defaults/,/\Z/p' haproxy.config | grep -wE "frontend |bind |default_backend "  >> ${adoc}
+            echo "Backends:" >> ${adoc}
+            oc exec -n openshift-ingress ${pod} -- grep -e ^backend haproxy.config >> ${adoc}
+            code 
+         done
       done
-
    }
 
    mtu_size(){
-      clustermtu=$(oc get clusternetworks -o json| jq '.items[].mtu ')
-      clustersubnet=$(oc get clusternetworks -o json| jq '.items[].network' | tr -d '"' | cut -c1-7)
-      nodemtu=$(oc debug $(oc get nodes --no-headers -o name | head -1) -- ip a 2>/dev/null | grep ${clustersubnet} -B2 | grep mtu | awk -Fmtu '{print $2}' | awk '{print $1}';)
-      if [ ${clustermtu} -lt ${nodemtu} ]
-      then
-         sub "MTU Size"
-         quote "The MTU setting of the OpenShift SDN is greater than one on the physical network. Severe fragmentation and performance degradation will occur."
-         link "https://docs.openshift.com/container-platform/${cv}/networking/changing-cluster-network-mtu.html"
+      clustermtu=$(oc get clusternetworks -o json 2>/dev/null | jq '.items[].mtu ')
+      clustersubnet=$(oc get clusternetworks -o json 2>/dev/null | jq '.items[].network' | tr -d '"' | cut -c1-7)
+      if [ -z ${clustermtu+x} ] || [ -z ${clustersubnet+x} ]
+      then 
+         nodemtu=$(oc debug $(oc get nodes --no-headers -o name 2>/dev/null| head -1) -- ip a 2>/dev/null | grep ${clustersubnet} -B2 | grep mtu | awk -Fmtu '{print $2}' | awk '{print $1}';)
+         if [ ${clustermtu} -lt ${nodemtu} ]
+         then
+            sub "MTU Size"
+            quote "The MTU setting of the OpenShift SDN is greater than one on the physical network. Severe fragmentation and performance degradation will occur."
+            link "https://docs.openshift.com/container-platform/${cv}/networking/changing-cluster-network-mtu.html"
+         fi
       fi
    }
 
@@ -1111,7 +1133,7 @@ operators(){
       quote "A cluster service version (CSV), is a YAML manifest created from Operator metadata that assists Operator Lifecycle Manager (OLM) in running the Operator in a cluster."
       link "https://docs.openshift.com/container-platform/${cv}/operators/operator_sdk/osdk-generating-csvs.html"
       code 
-      oc get clusterserviceversion -A -o wide >> ${adoc}
+      oc get clusterserviceversion -A -o wide --no-headers | awk '{print $2}' | sort | uniq  >> ${adoc}
       code 
    }
 
@@ -1186,7 +1208,7 @@ applications(){
    title "Applications"
 
    deploy_demo_app(){
-      sub "Openshif Deployments"
+      sub "Openshift Deployments"
       code
       # Create Schrodinger's cat project
       oc new-project schrodingers-cat | head -1 >> ${adoc}
@@ -1242,7 +1264,7 @@ applications(){
    }
 
    # Includes 
-   #if ${application_includes[deploy_demo_app]};then deploy_demo_app; fi 
+   if ${application_includes[deploy_demo_app]};then deploy_demo_app; fi 
    if ${application_includes[non_ready_deployments]};then non_ready_deployments; fi 
    if ${application_includes[non_available_deployments]};then non_available_deployments; fi 
    if ${application_includes[failed_builds]};then failed_builds; fi 
@@ -1269,7 +1291,7 @@ monitoring
 network 
 operators
 mesh
-applications   #TODO uncomment the deployment 
-generate_pdf
+applications 
+# generate_pdf
 
 # EndOfScript
