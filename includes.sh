@@ -8,6 +8,8 @@
 # Or comment out in the Main the function calls if need 
 # to disable a whole section.
 
+include_executive_summary=true
+
 declare -A commons_includes=( 
    [versions]=true
    [cluster_operators_degraded]=true
