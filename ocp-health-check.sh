@@ -10,37 +10,43 @@
 
 # Global Variables 
 
-if [ -z ${1} ]
-then 
-   echo "A short customer name is required"
-   exit 
-fi 
-customer=${1}
-adoc="pdf/report.adoc"
-namespaces=$(oc get namespaces --no-headers | awk '{print $1}')
-cv=$(oc version | grep Server | awk '{print $3}' | sed -e 's/.[0-9][0-9]$//g')  # cluster version  
-
-source includes.sh 
+customer=''; adoc=''; namespaces=''; cv='';
 
 # Functions 
 
 environment_setup(){
+   if [ -z ${1} ]
+   then 
+      echo "A short customer name is required"
+      exit 
+   fi 
+   global customer=${1}
+
    # Verify oc command 
+
    if [ ! command -v oc &> /dev/null ] 
    then 
       echo "Command oc could not be found!"
       exit 
    fi 
    # Verify jq command 
+
    if [ ! command -v jq &> /dev/null ]
    then 
       echo "Command jq could not be found!"
       exit 
-   fi 
-   # Delete old report
+   fi
+
+   global namespaces=$(oc get namespaces --no-headers | awk '{print $1}')
+   global cv=$(oc version | grep Server | awk '{print $3}' | sed -e 's/.[0-9][0-9]$//g')  # cluster version  
+   # Making sure the schrodingers-cat project doesn't exist 
+   oc delete project schrodingers-cat &>/dev/null 
+
+   # Setting up report.adoc
+   
+   global adoc="pdf/report.adoc"
    rm ${adoc}
    rm pdf/table.adoc
-   # Initialize report 
    echo ":author: Red Hat Consulting" >> ${adoc}
    echo ":toc:" >> ${adoc}
    echo ":numbered:" >> ${adoc}
@@ -56,8 +62,7 @@ environment_setup(){
    echo "= Openshift 4 Health Check Report" >> ${adoc}
    echo "" >> ${adoc}
 
-   # Making sure the schrodingers-cat project doesn't exist 
-   oc delete project schrodingers-cat &>/dev/null 
+
 }
 
 generate_pdf(){
@@ -226,12 +231,12 @@ commons(){
    }
 
    # Includes 
-   if ${commons_includes[versions]};then versions; fi 
-   if ${commons_includes[componentstatuses]};then componentstatuses; fi 
-   if ${commons_includes[cluster_status_failing_conditions]};then cluster_status_failing_conditions; fi 
-   if ${commons_includes[cluster_events_abnormal]};then cluster_events_abnormal; fi 
-   if ${commons_includes[cluster_api_status]};then cluster_api_status; fi 
-   if ${commons_includes[cluster_console_status]};then cluster_console_status; fi 
+   versions
+   componentstatuses
+   cluster_status_failing_conditions
+   cluster_events_abnormal
+   cluster_api_status
+   cluster_console_status
 }
 
 nodes(){
@@ -360,12 +365,12 @@ nodes(){
    }
 
    # Includes 
-   if ${nodes_includes[cluster_nodes_status]};then cluster_nodes_status; fi 
-   if ${nodes_includes[cluster_nodes_conditions]};then cluster_nodes_conditions; fi 
-   if ${nodes_includes[nodes_capacity]};then nodes_capacity; fi 
-   if ${nodes_includes[customresourcedefinitions]};then customresourcedefinitions; fi 
-   if ${nodes_includes[clusterresourcequotas]};then clusterresourcequotas; fi 
-   if ${nodes_includes[clusterserviceversions]};then clusterserviceversions; fi 
+   cluster_nodes_status
+   cluster_nodes_conditions
+   nodes_capacity
+   customresourcedefinitions
+   clusterresourcequotas
+   clusterserviceversions
 
 } 
 
@@ -472,13 +477,13 @@ machines(){
    }
 
    # Includes 
-   if ${machine_includes[list_machines]};then list_machines; fi 
-   if ${machine_includes[list_machinesets]};then list_machinesets; fi 
-   if ${machine_includes[machine_configs]};then machine_configs; fi 
-   if ${machine_includes[degraded_machine_configs_pools]};then machine_configs_pools; fi 
-   if ${machine_includes[machineautoscaler]};then machineautoscaler; fi 
-   if ${machine_includes[clusterautoscaler]};then clusterautoscaler; fi 
-   if ${machine_includes[machinehealthcheck]};then machinehealthcheck; fi 
+   list_machines
+   list_machinesets
+   machine_configs
+   machine_configs_pools
+   machineautoscaler
+   clusterautoscaler
+   machinehealthcheck
 
 }
 
@@ -538,10 +543,10 @@ etcd(){
    }
 
    # Includes 
-   if ${etcd_includes[list_etcd_pods]};then list_etcd_pods; fi 
-   if ${etcd_includes[member_list]};then member_list; fi 
-   if ${etcd_includes[endpoint_status]};then endpoint_status; fi 
-   if ${etcd_includes[endpoint_health]};then endpoint_health; fi 
+   list_etcd_pods
+   member_list
+   endpoint_status
+   endpoint_health
 
 }
 
@@ -611,12 +616,12 @@ pods(){
    }
 
    # Includes 
-   if ${pods_includes[list_failing_pods]};then list_failing_pods; fi 
-   if ${pods_includes[constantly_restarted_pods]};then constantly_restarted_pods; fi 
-   if ${pods_includes[long_running_pods]};then long_running_pods; fi 
-   if ${pods_includes[poddisruptionbudget]};then poddisruptionbudget; fi 
-   if ${pods_includes[pods_in_default]};then pods_in_default; fi 
-   if ${pods_includes[pods_per_node]};then pods_per_node; fi 
+   list_failing_pods
+   constantly_restarted_pods
+   long_running_pods
+   poddisruptionbudget
+   pods_in_default
+   pods_per_node
 
 }
 
@@ -833,18 +838,18 @@ security(){
    # oc get configmaps -n openshift-config   
 
    # Includes 
-   if ${security_includes[pending_csr]};then pending_csr; fi 
-   if ${security_includes[identities]};then identities; fi 
-   if ${security_includes[grants]};then grants; fi 
-   if ${security_includes[rolebindings]};then rolebindings; fi 
-   if ${security_includes[clusterrolebinding]};then clusterrolebinding; fi 
-   if ${security_includes[kubeadmin_secret]};then kubeadmin_secret; fi 
-   if ${security_includes[identity_providers]};then identity_providers; fi 
-   if ${security_includes[authentications]};then authentications; fi 
-   if ${security_includes[kubeletconfig]};then kubeletconfig; fi 
-   if ${security_includes[subscriptions]};then subscriptions; fi 
-   if ${security_includes[webhooks]};then webhooks; fi 
-   if ${security_includes[api_versions]};then api_versions; fi 
+   pending_csr
+   identities
+   grants
+   rolebindings
+   clusterrolebinding
+   kubeadmin_secret
+   identity_providers
+   authentications
+   kubeletconfig
+   subscriptions
+   webhooks
+   api_versions
 
 }
 
@@ -976,15 +981,15 @@ storage(){
    }
 
    # Includes 
-   if ${storage_includes[pv_status]};then pv_status; fi 
-   if ${storage_includes[pvc_status]};then pvc_status; fi 
-   if ${storage_includes[storage_classes]};then storage_classes; fi 
-   if ${storage_includes[quotas]};then quotas; fi 
-   if ${storage_includes[volumeSnapshot]};then volumeSnapshot; fi
-   if ${storage_includes[csidrivers]};then csidrivers; fi
-   if ${storage_includes[csinodes]};then csinodes; fi
-   if ${storage_includes[featuregate]};then featuregate; fi
-   if ${storage_includes[horizontalpodautoscalers]};then horizontalpodautoscalers; fi
+   pv_status
+   pvc_status
+   storage_classes
+   quotas
+   volumeSnapshot
+   csidrivers
+   csinodes
+   featuregate
+   horizontalpodautoscalers
 
    #TODO: Based on the available storage classes create a PVC and PV and delete for each 
       # Create and Delete PVC 
@@ -1043,10 +1048,10 @@ performance(){
    }
 
    # Includes 
-   if ${performance_includes[nodes_memory]};then nodes_memory; fi 
-   if ${performance_includes[nodes_cpu]};then nodes_cpu; fi 
-   if ${performance_includes[pods_memory]};then pods_memory; fi 
-   if ${performance_includes[pods_cpu]};then pods_cpu; fi 
+   nodes_memory
+   nodes_cpu
+   pods_memory
+   pods_cpu
 
    # oc get tuned -A 
    # oc get limits -A 
@@ -1066,7 +1071,7 @@ logging(){
    }
 
    # Includes 
-   if ${logging_includes[logging_resources]};then logging_resources; fi 
+   logging_resources
    # oc get all -n openshift-logging | grep collector | awk '{print $3}' | sort | uniq -cd 
    # oc get all -n openshift-logging daemonset.apps/collector | grep -A10 Selector 
 
@@ -1167,12 +1172,12 @@ monitoring (){
    }
 
    # Includes 
-   if ${monitoring_includes[prometheus]};then prometheus; fi 
-   if ${monitoring_includes[prometheus_rules]};then prometheus_rules; fi 
-   if ${monitoring_includes[servicemonitors]};then servicemonitors; fi 
-   if ${monitoring_includes[podmonitors]};then podmonitors; fi 
-   if ${monitoring_includes[alertmanagers]};then alertmanagers; fi 
-   if ${monitoring_includes[agents]};then agents; fi 
+   prometheus
+   prometheus_rules
+   servicemonitors
+   podmonitors
+   alertmanagers
+   agents
 
 }
 
@@ -1350,19 +1355,19 @@ network(){
    }
 
    # Includes 
-   if ${network_includes[enabled_network]};then enabled_network; fi 
-   if ${network_includes[networkpolicies]};then networkpolicies; fi 
-   if ${network_includes[clusternetworks]};then clusternetworks; fi 
-   if ${network_includes[hostsubnet]};then hostsubnet; fi 
-   if ${network_includes[proxy]};then proxy; fi 
-   if ${network_includes[endpoints]};then endpoints; fi 
-   if ${network_includes[route]};then route; fi 
-   if ${network_includes[egressnetworkpolicy]};then egressnetworkpolicy; fi 
-   if ${network_includes[ingresscontrollers]};then ingresscontrollers; fi 
-   if ${network_includes[ingresses]};then ingresses; fi 
-   if ${network_includes[ingress_controler_pods]};then ingress_controler_pods; fi 
-   if ${network_includes[mtu_size]};then mtu_size; fi 
-   if ${network_includes[podnetworkconnectivitycheck]};then podnetworkconnectivitycheck; fi 
+   enabled_network
+   networkpolicies
+   clusternetworks
+   hostsubnet
+   proxy
+   endpoints
+   route
+   egressnetworkpolicy
+   ingresscontrollers
+   ingresses
+   ingress_controler_pods
+   mtu_size
+   podnetworkconnectivitycheck
 
  #TODO: 
  # for NODE in `oc get node --no-headers|awk '{print$1}'`; do echo $NODE; oc debug node/$NODE -- ip a; echo "=====";done 
@@ -1431,11 +1436,11 @@ operators(){
    }
 
    # Includes 
-   if ${operators_includes[operators_degraded]};then operators_degraded; fi 
-   if ${operators_includes[operators_unavailable]};then operators_unavailable; fi 
-   if ${operators_includes[cluster_services]};then cluster_services; fi 
-   if ${operators_includes[operatorgroups]};then operatorgroups; fi 
-   if ${operators_includes[operatorsources]};then operatorsources; fi 
+   operators_degraded
+   operators_unavailable
+   cluster_services
+   operatorgroups
+   operatorsources
 }
 
 mesh(){
@@ -1478,9 +1483,9 @@ mesh(){
    }
 
    # Includes 
-   if ${operators_includes[serviceMeshControlPlane]};then serviceMeshControlPlane; fi 
-   if ${operators_includes[serviceMeshMember]};then serviceMeshMember; fi 
-   if ${operators_includes[serviceMeshMemberRoll]};then serviceMeshMemberRoll; fi 
+   serviceMeshControlPlane
+   serviceMeshMember
+   serviceMeshMemberRoll
 
 }
 
@@ -1572,37 +1577,39 @@ applications(){
    }
 
    # Includes 
-   if ${application_includes[deploy_demo_app]};then deploy_demo_app; fi 
-   if ${application_includes[non_ready_deployments]};then non_ready_deployments; fi 
-   if ${application_includes[non_available_deployments]};then non_available_deployments; fi 
-   if ${application_includes[inactive_projects]};then inactive_projects; fi 
-   if ${application_includes[failed_builds]};then failed_builds; fi 
+   deploy_demo_app
+   non_ready_deployments
+   non_available_deployments
+   inactive_projects
+   failed_builds
 
    #TODO: Verify that installed applications are not using deprectated api versions
    # oc get apiservices.apiregistration.k8s.io 
 
 }
 
-# Main 
+main(){
+   environment_setup
+   executive_summary
+   table      # Initializing the executive summary table
+   commons
+   nodes 
+   machines
+   etcd 
+   pods 
+   security
+   storage 
+   performance
+   logging 
+   monitoring  
+   network 
+   operators
+   mesh
+   applications 
+   table close_table_now   # Closing and adding the executive summary table
+   # generate_pdf
+} 
 
-environment_setup
-executive_summary
-table      # Initializing the executive summary table
-commons
-nodes 
-machines
-etcd 
-pods 
-security
-storage 
-performance
-logging 
-monitoring  
-network 
-operators
-mesh
-applications 
-table close_table_now   # Closing and adding the executive summary table
-# generate_pdf
+main 
 
 # EndOfScript
