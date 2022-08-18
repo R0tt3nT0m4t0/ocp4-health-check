@@ -10,43 +10,59 @@
 
 # Global Variables 
 
-customer=''; adoc=''; namespaces=''; cv='';
+customer=''; adoc=''; namespaces=''; cv=''; 
+# Section totals for executive resume (total, count)
+tot_commons=(0 0)
+tot_nodes=(0 0)
+tot_machines=(0 0)
+tot_etcd=(0 0)
+tot_pods=(0 0)
+tot_security=(0 0)
+tot_storage=(0 0)
+tot_performance=(0 0)
+tot_logging=(0 0)
+tot_monitoring=(0 0)
+tot_network=(0 0)
+tot_operators=(0 0)
+tot_mesh=(0 0)
+tot_applications=(0 0)
 
 # Functions 
 
 environment_setup(){
-   if [ -z ${1} ]
+   if [ -n "${1}" ]
    then 
-      echo "A short customer name is required"
+      echo "A short customer name is required (no spaces)"
       exit 
    fi 
-   global customer=${1}
+   customer=${1}
 
    # Verify oc command 
 
    if [ ! command -v oc &> /dev/null ] 
    then 
-      echo "Command oc could not be found!"
+      echo "Command oc not found!"
       exit 
    fi 
    # Verify jq command 
 
    if [ ! command -v jq &> /dev/null ]
    then 
-      echo "Command jq could not be found!"
+      echo "Command jq not found!"
       exit 
    fi
 
-   global namespaces=$(oc get namespaces --no-headers | awk '{print $1}')
-   global cv=$(oc version | grep Server | awk '{print $3}' | sed -e 's/.[0-9][0-9]$//g')  # cluster version  
+   namespaces=$(oc get namespaces --no-headers | awk '{print $1}')
+   cv=$(oc version | grep Server | awk '{print $3}' | sed -e 's/.[0-9][0-9]$//g')  # cluster version  
+   
    # Making sure the schrodingers-cat project doesn't exist 
    oc delete project schrodingers-cat &>/dev/null 
 
    # Setting up report.adoc
-   
-   global adoc="pdf/report.adoc"
+   adoc="pdf/report.adoc"
    rm ${adoc}
    rm pdf/table.adoc
+   rm pdf/resume.adoc
    echo ":author: Red Hat Consulting" >> ${adoc}
    echo ":toc:" >> ${adoc}
    echo ":numbered:" >> ${adoc}
@@ -61,20 +77,30 @@ environment_setup(){
    echo "" >> ${adoc}
    echo "= Openshift 4 Health Check Report" >> ${adoc}
    echo "" >> ${adoc}
-
-
 }
 
 generate_pdf(){
-   report="${customer}_HealthCheck_Report.pdf"
-   if [[ -d pdf ]]
+   if [ ! command -v asciidoctor-pdf &> /dev/null ] 
    then 
-      cd pdf
-      asciidoctor-pdf --verbose -r asciidoctor-diagram -o "../${report}" report.adoc 
-   else
-      echo "The `pdf` directory couldn't be found!"
-      exit 
-   fi
+      echo "Command asciidoctor-pdf not found!"
+      echo "Generation of the PDF skipped..."
+   else 
+      report="${customer}_HealthCheck_Report.pdf"
+      if [[ -d pdf ]]
+      then 
+         cd pdf
+         gem list | grep -w ^asciidoctor-diagram\ .*$ &>/dev/null 
+         if [ $? == 0 ]
+         then 
+            asciidoctor-pdf -r asciidoctor-diagram -o "../${report}" report.adoc 
+         else 
+            asciidoctor-pdf -o "../${report}" report.adoc 
+         fi
+      else
+         echo "The `pdf` directory couldn't be found!"
+         echo "Generation of the PDF skipped..."
+      fi
+   fi 
 }
 
 title(){
@@ -103,11 +129,13 @@ link(){
 }
 
 executive_summary(){
-   if [ ${include_executive_summary} ] && [ -f pdf/executive.adoc ]
+   if [ -f pdf/executive.adoc ]
    then 
       cat pdf/executive.adoc >> ${adoc}
       echo "" >> ${adoc}
-      echo "@TABLE_PLACEHOLDER@" >> ${adoc}
+      echo "@STATUS_PLACEHOLDER@" >> ${adoc}
+      echo "" >> ${adoc}
+      echo "@CHECKLIST_PLACEHOLDER@" >> ${adoc}
       echo "" >> ${adoc}
    else 
       echo "The pdf/executive.adoc file was not found. Will continue without executive summary"
@@ -116,27 +144,143 @@ executive_summary(){
 
 table(){
    # Executive Summary Include in Table 
-   # Receives 2 parameters 
+   # Receives 3 parameters 
    # Area
    # Result [PASS, FAIL, REVIEW]
+   # Section
    tadoc="pdf/table.adoc"
+   resdoc="pdf/resume.adoc"
    valid="PASS FAIL REVIEW"
    if [ ! -f ${tadoc} ]
    then 
+      # Initializing the checklist and the executive status tables
       touch  ${tadoc}
+      echo "<<<" >> ${tadoc}
+      echo "" >> ${tadoc}
       echo "[%header,cols='5,1']" >> ${tadoc}
       echo "|===" >> ${tadoc}
       echo "|Area|Result" >> ${tadoc}
+      
+      touch  ${resdoc}
+      echo "" >> ${resdoc}
+      echo "[%header,cols='1,1,1']" >> ${resdoc}
+      echo "|===" >> ${resdoc}
+      echo "|Area|Verified Items|Health" >> ${resdoc}
+
    else 
       if [[ "close_table_now" == ${1} ]]
       then 
+         echo "|commons       |${tot_commons[0]}         |$(( ${tot_commons[1]} * ${tot_commons[0]} ))%"             >> ${resdoc}
+         echo "|nodes         |${tot_nodes[0]}           |$(( ${tot_nodes[1]} * ${tot_nodes[0]} ))%"                 >> ${resdoc}
+         echo "|machines      |${tot_machines[0]}        |$(( ${tot_machines[1]} * ${tot_machines[0]} ))%"           >> ${resdoc}
+         echo "|etcd          |${tot_etcd[0]}            |$(( ${tot_etcd[1]} * ${tot_etcd[0]} ))%"                   >> ${resdoc}
+         echo "|pods          |${tot_pods[0]}            |$(( ${tot_pods[1]} * ${tot_pods[0]} ))%"                   >> ${resdoc}
+         echo "|security      |${tot_security[0]}        |$(( ${tot_security[1]} * ${tot_security[0]} ))%"           >> ${resdoc}
+         echo "|storage       |${tot_storage[0]}         |$(( ${tot_storage[1]} * ${tot_storage[0]} ))%"             >> ${resdoc}
+         echo "|performance   |${tot_performance[0]}     |$(( ${tot_performance[1]} * ${tot_performance[0]} ))%"     >> ${resdoc}
+         echo "|logging       |${tot_logging[0]}         |$(( ${tot_logging[1]} * ${tot_logging[0]} ))%"             >> ${resdoc}
+         echo "|monitoring    |${tot_monitoring[0]}      |$(( ${tot_monitoring[1]} * ${tot_monitoring[0]} ))%"       >> ${resdoc}
+         echo "|network       |${tot_network[0]}         |$(( ${tot_network[1]} * ${tot_network[0]} ))%"             >> ${resdoc}
+         echo "|operators     |${tot_operators[0]}       |$(( ${tot_operators[1]} * ${tot_operators[0]} ))%"         >> ${resdoc}
+         echo "|mesh          |${tot_mesh[0]}            |$(( ${tot_mesh[1]} * ${tot_mesh[0]} ))%"                   >> ${resdoc}
+         echo "|applications  |${tot_applications[0]}    |$(( ${tot_applications[1]} * ${tot_applications[0]} ))%"   >> ${resdoc}
+         echo "|===" >> ${resdoc}
+         echo "" >> ${resdoc}
+         sed -ie '/@STATUS_PLACEHOLDER@/ r pdf/resume.adoc' ${adoc}
+         sed -i '/@STATUS_PLACEHOLDER@/d' ${adoc}         
+         echo "" >> ${adoc}
+
          echo "|===" >> ${tadoc}
-         sed -ie '/@TABLE_PLACEHOLDER@/ r pdf/table.adoc' ${adoc}
-         sed -i '/@TABLE_PLACEHOLDER@/d' ${adoc}
+         echo "" >> ${tadoc}
+         sed -ie '/@CHECKLIST_PLACEHOLDER@/ r pdf/table.adoc' ${adoc}
+         sed -i '/@CHECKLIST_PLACEHOLDER@/d' ${adoc}
+         echo "" >> ${adoc}
       else
+         # Generating table adocs
          if grep -q ${2} <<< ${valid}
          then 
+            # Direct entry to the checklist
             echo "|${1}|${2}" >> ${tadoc}
+            # Entry to executive summary 
+            totcalc(){
+               case ${1} in
+                  "commons") 
+                     [ ${2} == "add" ] && ((tot_commons[0]=${tot_commons[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_commons[0]=${tot_commons[0]}-1)) 
+                     ((tot_commons[1]=${tot_commons[1]}+1))
+                     ;;
+                  "nodes") 
+                     [ ${2} == "add" ] && ((tot_nodes[0]=${tot_nodes[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_nodes[0]=${tot_nodes[0]}-1)) 
+                     ((tot_nodes[1]=${tot_nodes[1]}+1))
+                     ;;
+                  "machines") 
+                     [ ${2} == "add" ] && ((tot_machines[0]=${tot_machines[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_machines[0]=${tot_machines[0]}-1)) 
+                     ((tot_machines[1]=${tot_machines[1]}+1))
+                     ;;
+                  "etcd") 
+                     [ ${2} == "add" ] && ((tot_etcd[0]=${tot_etcd[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_etcd[0]=${tot_etcd[0]}-1)) 
+                     ((tot_etcd[1]=${tot_etcd[1]}+1))
+                     ;;
+                  "pods") 
+                     [ ${2} == "add" ] && ((tot_pods[0]=${tot_pods[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_pods[0]=${tot_pods[0]}-1)) 
+                     ((tot_pods[1]=${tot_pods[1]}+1))
+                     ;;
+                  "security") 
+                     [ ${2} == "add" ] && ((tot_security[0]=${tot_security[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_security[0]=${tot_security[0]}-1)) 
+                     ((tot_security[1]=${tot_security[1]}+1))
+                     ;;
+                  "storage") 
+                     [ ${2} == "add" ] && ((tot_storage[0]=${tot_storage[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_storage[0]=${tot_storage[0]}-1)) 
+                     ((tot_storage[1]=${tot_storage[1]}+1))
+                     ;;
+                  "performance") 
+                     [ ${2} == "add" ] && ((tot_performance[0]=${tot_performance[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_performance[0]=${tot_performance[0]}-1)) 
+                     ((tot_performance[1]=${tot_performance[1]}+1))
+                     ;;
+                  "logging") 
+                     [ ${2} == "add" ] && ((tot_logging[0]=${tot_logging[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_logging[0]=${tot_logging[0]}-1)) 
+                     ((tot_logging[1]=${tot_logging[1]}+1))
+                     ;;
+                  "monitoring") 
+                     [ ${2} == "add" ] && ((tot_monitoring[0]=${tot_monitoring[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_monitoring[0]=${tot_monitoring[0]}-1)) 
+                     ((tot_monitoring[1]=${tot_monitoring[1]}+1))
+                     ;;
+                  "network") 
+                     [ ${2} == "add" ] && ((tot_network[0]=${tot_network[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_network[0]=${tot_network[0]}-1)) 
+                     ((tot_network[1]=${tot_network[1]}+1))
+                     ;;
+                  "operators") 
+                     [ ${2} == "add" ] && ((tot_operators[0]=${tot_operators[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_operators[0]=${tot_operators[0]}-1)) 
+                     ((tot_operators[1]=${tot_operators[1]}+1))
+                     ;;
+                  "mesh") 
+                     [ ${2} == "add" ] && ((tot_mesh[0]=${tot_mesh[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_mesh[0]=${tot_mesh[0]}-1)) 
+                     ((tot_mesh[1]=${tot_mesh[1]}+1))
+                     ;;
+                  "applications") 
+                     [ ${2} == "add" ] && ((tot_applications[0]=${tot_applications[0]}+1))
+                     [ ${2} == "sub" ] && ((tot_applications[0]=${tot_applications[0]}-1)) 
+                     ((tot_applications[1]=${tot_applications[1]}+1))
+                     ;;
+               esac
+            }
+            case ${2} in 
+               "PASS") totcalc ${3} "add" ;;
+               "FAIL") totcalc ${3} "sub";;
+               "REVIEW") totcalc ${3};;
+            esac
          else 
             echo "Executive Summary table value ${2} for ${1} is not valid. Ignored!."
          fi 
@@ -145,7 +289,8 @@ table(){
 }
 
 commons(){
-   title "Commons"
+   section="commons"
+   title ${section}
 
    versions(){
       sub "Versions"
@@ -154,7 +299,7 @@ commons(){
       codeblock 
       oc version >> ${adoc}
       codeblock 
-      table "Versions" "PASS"
+      table "Versions" "PASS" ${section}
    }
 
    componentstatuses(){
@@ -164,7 +309,7 @@ commons(){
       codeblock
       oc get componentstatuses 2>/dev/null >> ${adoc}
       codeblock
-      table "Components status" "PASS"
+      table "Components status" "PASS" ${section}
    }
 
    cluster_status_failing_conditions(){
@@ -233,14 +378,15 @@ commons(){
    # Includes 
    versions
    componentstatuses
-   cluster_status_failing_conditions
-   cluster_events_abnormal
-   cluster_api_status
-   cluster_console_status
+   # cluster_status_failing_conditions
+   # cluster_events_abnormal
+   # cluster_api_status
+   # cluster_console_status
 }
 
 nodes(){
-   title "nodes"
+   section="nodes"
+   title ${section}
 
    cluster_nodes_status(){
       sub "Cluster Nodes Status"
@@ -375,7 +521,8 @@ nodes(){
 } 
 
 machines(){
-   title "Machines"
+   section="machines"
+   title ${section}
 
    list_machines(){
       sub "Machine Information"
@@ -488,7 +635,8 @@ machines(){
 }
 
 etcd(){
-   title "etcd"
+   section="etcd"
+   title ${section}
    ns="openshift-etcd"
    # Getting 1 pod as target for internal verifications 
    t_pod=($(oc get pods -n ${ns} -l app=etcd -o Name | head -1))
@@ -551,7 +699,8 @@ etcd(){
 }
 
 pods(){
-   title "pods"
+   section="pods"
+   title ${section}
 
    list_failing_pods(){
       sub "Failing pods"
@@ -626,7 +775,8 @@ pods(){
 }
 
 security(){
-   title "security"
+   section="security"
+   title ${section}
 
    pending_csr(){
       sub "Pending CSRs"
@@ -854,7 +1004,8 @@ security(){
 }
 
 storage(){
-   title "storage"
+   section="storage"
+   title ${section}
 
    pv_status(){
       quote "OCP uses persistent storage known as Persisten Volumes that allow you to access storage devices."
@@ -1003,7 +1154,8 @@ storage(){
 } 
 
 performance(){
-   title "performance"
+   section="performance"
+   title ${section}
 
    nodes_memory(){
       limit=21
@@ -1059,7 +1211,8 @@ performance(){
 }
 
 logging(){
-   title "logging"
+   section="logging"
+   title ${section}
 
    logging_resources(){
       sub "Logging Resources"
@@ -1078,7 +1231,8 @@ logging(){
 }
 
 monitoring (){
-   title "Monitoring"
+   section="monitoring"
+   title ${section}
 
    prometheus(){
       sub "Prometheus Status"
@@ -1182,7 +1336,8 @@ monitoring (){
 }
 
 network(){
-   title "network"
+   section="network"
+   title ${section}
 
    enabled_network(){
       sub "Enabled Networks"
@@ -1375,7 +1530,8 @@ network(){
 }
 
 operators(){
-   title "operators"
+   section="operators"
+   title ${section}
 
    operators_degraded(){
       sub "Degraded Cluster Operators"
@@ -1444,6 +1600,8 @@ operators(){
 }
 
 mesh(){
+   section="mesh"
+   title ${section}
    cont='false' 
 
    serviceMeshControlPlane(){
@@ -1490,7 +1648,8 @@ mesh(){
 }
 
 applications(){
-   title "Applications"
+   section="applications"
+   title ${section}
 
    deploy_demo_app(){
       sub "Application Deployment"
@@ -1607,7 +1766,7 @@ main(){
    mesh
    applications 
    table close_table_now   # Closing and adding the executive summary table
-   # generate_pdf
+   generate_pdf
 } 
 
 main 

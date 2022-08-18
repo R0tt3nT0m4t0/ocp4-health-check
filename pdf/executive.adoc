@@ -1,0 +1,7 @@
+
+== Executive Summary 
+
+Red Hat Consulting executed both a manual and automated automated health check verifications in Point72's Openshift Container Platform Version 4.9 Non-Production cluster to identify possible problems on security, performance, configuration and overall utilization of the platform.
+
+> Result: PASS
+
