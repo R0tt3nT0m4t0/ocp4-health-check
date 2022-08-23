@@ -12,30 +12,22 @@
 
 customer=''; adoc=''; namespaces=''; cv=''; 
 # Section totals for executive resume (total, count)
-tot_commons=(0 0)
-tot_nodes=(0 0)
-tot_machines=(0 0)
-tot_etcd=(0 0)
-tot_pods=(0 0)
-tot_security=(0 0)
-tot_storage=(0 0)
-tot_performance=(0 0)
-tot_logging=(0 0)
-tot_monitoring=(0 0)
-tot_network=(0 0)
-tot_operators=(0 0)
-tot_mesh=(0 0)
-tot_applications=(0 0)
+tot_commons=(0 0 0);    tot_nodes=(0 0 0);         tot_machines=(0 0 0)
+tot_etcd=(0 0 0);       tot_pods=(0 0 0);          tot_security=(0 0 0)
+tot_storage=(0 0 0);    tot_performance=(0 0 0);   tot_logging=(0 0 0)
+tot_monitoring=(0 0 0); tot_network=(0 0 0);       tot_operators=(0 0 0)
+tot_mesh=(0 0 0);       tot_applications=(0 0 0)
 
 # Functions 
 
 environment_setup(){
-   if [ -n "${1}" ]
+   if [ -z ${1} ]
    then 
-      echo "A short customer name is required (no spaces)"
+      echo "A short customer name is required (no spaces). ${1}"
       exit 
    fi 
    customer=${1}
+   echo "Running Health Check for ${customer}"
 
    # Verify oc command 
 
@@ -43,6 +35,8 @@ environment_setup(){
    then 
       echo "Command oc not found!"
       exit 
+   else 
+      echo "   - oc command: OK"
    fi 
    # Verify jq command 
 
@@ -50,10 +44,12 @@ environment_setup(){
    then 
       echo "Command jq not found!"
       exit 
+   else 
+      echo "   - jq command: OK"
    fi
 
    namespaces=$(oc get namespaces --no-headers | awk '{print $1}')
-   cv=$(oc version | grep Server | awk '{print $3}' | sed -e 's/.[0-9][0-9]$//g')  # cluster version  
+   cv=$(oc version | grep Server | awk '{print $3}' | sed -e 's/.[0-9][0-9]$//g')
    
    # Making sure the schrodingers-cat project doesn't exist 
    oc delete project schrodingers-cat &>/dev/null 
@@ -104,6 +100,7 @@ generate_pdf(){
 }
 
 title(){
+   echo "   - Verifying: ${1}"
    echo "== ${1}" >> ${adoc}
    echo "" >> ${adoc}
 }
@@ -154,36 +151,35 @@ table(){
    if [ ! -f ${tadoc} ]
    then 
       # Initializing the checklist and the executive status tables
-      touch  ${tadoc}
-      echo "<<<" >> ${tadoc}
-      echo "" >> ${tadoc}
-      echo "[%header,cols='5,1']" >> ${tadoc}
-      echo "|===" >> ${tadoc}
-      echo "|Area|Result" >> ${tadoc}
-      
       touch  ${resdoc}
       echo "" >> ${resdoc}
-      echo "[%header,cols='1,1,1']" >> ${resdoc}
+      echo "[%header,cols=\"2,^1,^1,^1\",width=75%,align=center]" >> ${resdoc}
       echo "|===" >> ${resdoc}
-      echo "|Area|Verified Items|Health" >> ${resdoc}
+      echo "|Area|Passed|Failed|Review" >> ${resdoc}
+
+      touch  ${tadoc}
+      echo "== Results CheckList" >> ${tadoc}
+      echo "[%header,%autowidth,width=80%,align=center]" >> ${tadoc}
+      echo "|===" >> ${tadoc}
+      echo "|Area|Result" >> ${tadoc}
 
    else 
       if [[ "close_table_now" == ${1} ]]
       then 
-         echo "|commons       |${tot_commons[0]}         |$(( ${tot_commons[1]} * ${tot_commons[0]} ))%"             >> ${resdoc}
-         echo "|nodes         |${tot_nodes[0]}           |$(( ${tot_nodes[1]} * ${tot_nodes[0]} ))%"                 >> ${resdoc}
-         echo "|machines      |${tot_machines[0]}        |$(( ${tot_machines[1]} * ${tot_machines[0]} ))%"           >> ${resdoc}
-         echo "|etcd          |${tot_etcd[0]}            |$(( ${tot_etcd[1]} * ${tot_etcd[0]} ))%"                   >> ${resdoc}
-         echo "|pods          |${tot_pods[0]}            |$(( ${tot_pods[1]} * ${tot_pods[0]} ))%"                   >> ${resdoc}
-         echo "|security      |${tot_security[0]}        |$(( ${tot_security[1]} * ${tot_security[0]} ))%"           >> ${resdoc}
-         echo "|storage       |${tot_storage[0]}         |$(( ${tot_storage[1]} * ${tot_storage[0]} ))%"             >> ${resdoc}
-         echo "|performance   |${tot_performance[0]}     |$(( ${tot_performance[1]} * ${tot_performance[0]} ))%"     >> ${resdoc}
-         echo "|logging       |${tot_logging[0]}         |$(( ${tot_logging[1]} * ${tot_logging[0]} ))%"             >> ${resdoc}
-         echo "|monitoring    |${tot_monitoring[0]}      |$(( ${tot_monitoring[1]} * ${tot_monitoring[0]} ))%"       >> ${resdoc}
-         echo "|network       |${tot_network[0]}         |$(( ${tot_network[1]} * ${tot_network[0]} ))%"             >> ${resdoc}
-         echo "|operators     |${tot_operators[0]}       |$(( ${tot_operators[1]} * ${tot_operators[0]} ))%"         >> ${resdoc}
-         echo "|mesh          |${tot_mesh[0]}            |$(( ${tot_mesh[1]} * ${tot_mesh[0]} ))%"                   >> ${resdoc}
-         echo "|applications  |${tot_applications[0]}    |$(( ${tot_applications[1]} * ${tot_applications[0]} ))%"   >> ${resdoc}
+         echo "|commons       |${tot_commons[0]}         |${tot_commons[1]}      |${tot_commons[2]}"        >> ${resdoc}
+         echo "|nodes         |${tot_nodes[0]}           |${tot_nodes[1]}        |${tot_nodes[2]}"          >> ${resdoc}
+         echo "|machines      |${tot_machines[0]}        |${tot_machines[1]}     |${tot_machines[2]}"       >> ${resdoc}
+         echo "|etcd          |${tot_etcd[0]}            |${tot_etcd[1]}         |${tot_etcd[2]}"           >> ${resdoc}
+         echo "|pods          |${tot_pods[0]}            |${tot_pods[1]}         |${tot_pods[2]}"           >> ${resdoc}
+         echo "|security      |${tot_security[0]}        |${tot_security[1]}     |${tot_security[2]}"       >> ${resdoc}
+         echo "|storage       |${tot_storage[0]}         |${tot_storage[1]}      |${tot_storage[2]}"        >> ${resdoc}
+         echo "|performance   |${tot_performance[0]}     |${tot_performance[1]}  |${tot_performance[2]}"    >> ${resdoc}
+         echo "|logging       |${tot_logging[0]}         |${tot_logging[1]}      |${tot_logging[2]}"        >> ${resdoc}
+         echo "|monitoring    |${tot_monitoring[0]}      |${tot_monitoring[1]}   |${tot_monitoring[2]}"     >> ${resdoc}
+         echo "|network       |${tot_network[0]}         |${tot_network[1]}      |${tot_network[2]}"        >> ${resdoc}
+         echo "|operators     |${tot_operators[0]}       |${tot_operators[1]}    |${tot_operators[2]}"      >> ${resdoc}
+         echo "|mesh          |${tot_mesh[0]}            |${tot_mesh[1]}         |${tot_mesh[2]}"           >> ${resdoc}
+         echo "|applications  |${tot_applications[0]}    |${tot_applications[1]} |${tot_applications[2]}"   >> ${resdoc}
          echo "|===" >> ${resdoc}
          echo "" >> ${resdoc}
          sed -ie '/@STATUS_PLACEHOLDER@/ r pdf/resume.adoc' ${adoc}
@@ -202,84 +198,77 @@ table(){
             # Direct entry to the checklist
             echo "|${1}|${2}" >> ${tadoc}
             # Entry to executive summary 
-            totcalc(){
-               case ${1} in
-                  "commons") 
-                     [ ${2} == "add" ] && ((tot_commons[0]=${tot_commons[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_commons[0]=${tot_commons[0]}-1)) 
-                     ((tot_commons[1]=${tot_commons[1]}+1))
-                     ;;
-                  "nodes") 
-                     [ ${2} == "add" ] && ((tot_nodes[0]=${tot_nodes[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_nodes[0]=${tot_nodes[0]}-1)) 
-                     ((tot_nodes[1]=${tot_nodes[1]}+1))
-                     ;;
-                  "machines") 
-                     [ ${2} == "add" ] && ((tot_machines[0]=${tot_machines[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_machines[0]=${tot_machines[0]}-1)) 
-                     ((tot_machines[1]=${tot_machines[1]}+1))
-                     ;;
-                  "etcd") 
-                     [ ${2} == "add" ] && ((tot_etcd[0]=${tot_etcd[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_etcd[0]=${tot_etcd[0]}-1)) 
-                     ((tot_etcd[1]=${tot_etcd[1]}+1))
-                     ;;
-                  "pods") 
-                     [ ${2} == "add" ] && ((tot_pods[0]=${tot_pods[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_pods[0]=${tot_pods[0]}-1)) 
-                     ((tot_pods[1]=${tot_pods[1]}+1))
-                     ;;
-                  "security") 
-                     [ ${2} == "add" ] && ((tot_security[0]=${tot_security[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_security[0]=${tot_security[0]}-1)) 
-                     ((tot_security[1]=${tot_security[1]}+1))
-                     ;;
-                  "storage") 
-                     [ ${2} == "add" ] && ((tot_storage[0]=${tot_storage[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_storage[0]=${tot_storage[0]}-1)) 
-                     ((tot_storage[1]=${tot_storage[1]}+1))
-                     ;;
-                  "performance") 
-                     [ ${2} == "add" ] && ((tot_performance[0]=${tot_performance[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_performance[0]=${tot_performance[0]}-1)) 
-                     ((tot_performance[1]=${tot_performance[1]}+1))
-                     ;;
-                  "logging") 
-                     [ ${2} == "add" ] && ((tot_logging[0]=${tot_logging[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_logging[0]=${tot_logging[0]}-1)) 
-                     ((tot_logging[1]=${tot_logging[1]}+1))
-                     ;;
-                  "monitoring") 
-                     [ ${2} == "add" ] && ((tot_monitoring[0]=${tot_monitoring[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_monitoring[0]=${tot_monitoring[0]}-1)) 
-                     ((tot_monitoring[1]=${tot_monitoring[1]}+1))
-                     ;;
-                  "network") 
-                     [ ${2} == "add" ] && ((tot_network[0]=${tot_network[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_network[0]=${tot_network[0]}-1)) 
-                     ((tot_network[1]=${tot_network[1]}+1))
-                     ;;
-                  "operators") 
-                     [ ${2} == "add" ] && ((tot_operators[0]=${tot_operators[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_operators[0]=${tot_operators[0]}-1)) 
-                     ((tot_operators[1]=${tot_operators[1]}+1))
-                     ;;
-                  "mesh") 
-                     [ ${2} == "add" ] && ((tot_mesh[0]=${tot_mesh[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_mesh[0]=${tot_mesh[0]}-1)) 
-                     ((tot_mesh[1]=${tot_mesh[1]}+1))
-                     ;;
-                  "applications") 
-                     [ ${2} == "add" ] && ((tot_applications[0]=${tot_applications[0]}+1))
-                     [ ${2} == "sub" ] && ((tot_applications[0]=${tot_applications[0]}-1)) 
-                     ((tot_applications[1]=${tot_applications[1]}+1))
-                     ;;
-               esac
-            }
-            case ${2} in 
-               "PASS") totcalc ${3} "add" ;;
-               "FAIL") totcalc ${3} "sub";;
-               "REVIEW") totcalc ${3};;
+            case ${3} in
+               "commons") 
+                  [[ ${2} == "PASS" ]] && ((tot_commons[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_commons[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_commons[2]++)) 
+                  ;;
+               "nodes") 
+                  [[ ${2} == "PASS" ]] && ((tot_nodes[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_nodes[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_nodes[2]++)) 
+                  ;;
+               "machines") 
+                  [[ ${2} == "PASS" ]] && ((tot_machines[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_machines[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_machines[2]++))
+                  ;;
+               "etcd") 
+                  [[ ${2} == "PASS" ]] && ((tot_etcd[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_etcd[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_etcd[2]++))
+                  ;;
+               "pods") 
+                  [[ ${2} == "PASS" ]] && ((tot_pods[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_pods[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_pods[2]++))
+                  ;;
+               "security") 
+                  [[ ${2} == "PASS" ]] && ((tot_security[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_security[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_security[2]++))
+                  ;;
+               "storage") 
+                  [[ ${2} == "PASS" ]] && ((tot_storage[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_storage[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_storage[2]++))
+                  ;;
+               "performance") 
+                  [[ ${2} == "PASS" ]] && ((tot_performance[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_performance[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_performance[2]++))
+                  ;;
+               "logging") 
+                  [[ ${2} == "PASS" ]] && ((tot_logging[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_logging[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_logging[2]++))
+                  ;;
+               "monitoring") 
+                  [[ ${2} == "PASS" ]] && ((tot_monitoring[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_monitoring[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_monitoring[2]++))
+                  ;;
+               "network") 
+                  [[ ${2} == "PASS" ]] && ((tot_network[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_network[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_network[2]++))
+                  ;;
+               "operators") 
+                  [[ ${2} == "PASS" ]] && ((tot_operators[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_operators[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_operators[2]++))
+                  ;;
+               "mesh") 
+                  [[ ${2} == "PASS" ]] && ((tot_mesh[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_mesh[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_mesh[2]++))
+                  ;;
+               "applications") 
+                  [[ ${2} == "PASS" ]] && ((tot_applications[0]++))
+                  [[ ${2} == "FAIL" ]] && ((tot_applications[1]++)) 
+                  [[ ${2} == "REVIEW" ]] && ((tot_applications[2]++))
+                  ;;
             esac
          else 
             echo "Executive Summary table value ${2} for ${1} is not valid. Ignored!."
@@ -320,10 +309,10 @@ commons(){
       if [ "True" == $(oc get clusterversion -o=jsonpath='{range .items[0].status.conditions[?(@.type=="Failing")]}{.status}') ]
       then
          oc get clusterversion -o=json | jq '.items[].status.conditions' >> ${adoc}
-         table "Cluster Status Conditions" "REVIEW"
+         table "Cluster Status Conditions" "REVIEW" ${section}
       else
          echo "All conditions are Normal" >> ${adoc}
-         table "Cluster Status Conditions" "PASS"
+         table "Cluster Status Conditions" "PASS" ${section}
       fi
       codeblock 
    }
@@ -336,9 +325,9 @@ commons(){
       oc get events --field-selector type!=Normal -A --no-headers | awk '{print $1,$3,$4,$5}' | sort | uniq >> ${adoc} 
       if (( $(oc get events --field-selector type!=Normal -A --no-headers | awk '{print $1,$3,$4,$5}' | sort | uniq | wc -l) > 0 ))
       then 
-         table "Cluster Abnormal Events" "REVIEW"
+         table "Cluster Abnormal Events" "REVIEW" ${section}
       else 
-         table "Cluster Abnoral Events" "PASS"
+         table "Cluster Abnoral Events" "PASS" ${section}
       fi
       codeblock 
    }
@@ -367,10 +356,10 @@ commons(){
          if [ $? != 0 ]
          then 
             echo "Console Status: FAILED" >> ${adoc}
-            table "Console Status" "FAIL"
+            table "Console Status" "FAIL" ${section}
          else 
             echo "Console Status: SUCCEEDED" >> ${adoc}
-            table "Console Status" "PASS"
+            table "Console Status" "PASS" ${section}
          fi 
       codeblock 
    }
@@ -395,9 +384,9 @@ nodes(){
       if [ -z $(oc get nodes --no-headers | awk '$2 != "Ready"') ]
       then
          echo "All node conditions are Ready!"  >> ${adoc}
-         table "Cluster Nodes Status" "PASS"
+         table "Cluster Nodes Status" "PASS" ${section}
       else 
-         table "Cluster Nodes Status" "FAIL"
+         table "Cluster Nodes Status" "FAIL" ${section}
       fi 
       codeblock 
    }
@@ -426,7 +415,7 @@ nodes(){
             fi
          done
          echo "" >> ${adoc}
-         table "Cluster Nodes Conditions ${type}" ${state}
+         table "Cluster Nodes Conditions ${type}" ${state} ${section}
       done
 
    }
@@ -454,7 +443,7 @@ nodes(){
             state="REVIEW"
          done
       done 
-      table "Cluster Nodes Capacity" ${state}
+      table "Cluster Nodes Capacity" ${state} ${section}
       echo "|===" >> ${adoc}
    }
 
@@ -462,20 +451,20 @@ nodes(){
       sub "Custom Resource Definitions"
       quote "A custom resource definition (CRD) object defines a new, unique object type, called a kind, in the cluster and lets the Kubernetes API server handle its entire lifecycle."
       link "https://docs.openshift.com/container-platform/${cv}/operators/understanding/crds/crd-extending-api-with-crds.html" 
-      for crd in $(oc get customresourcedefinitions --no-headers | awk '{print $1}')
+      for crd in $(oc get customresourcedefinitions --no-headers 2>/dev/null| awk '{print $1}')
       do
          result=$(oc get customresourcedefinitions \
-            volumereplicationclasses.replication.storage.openshift.io -o json | \
+            volumereplicationclasses.replication.storage.openshift.io -o json 2>/dev/null | \
             jq '.status.conditions[].status')
          if grep -q False <<< ${result}
          then 
             echo "**${crd}**" >> ${adoc}
             codeblock
             oc get customresourcedefinitions \
-            volumereplicationclasses.replication.storage.openshift.io -o json | \
+            volumereplicationclasses.replication.storage.openshift.io -o json 2>/dev/null| \
             jq '.status.conditions' >> ${adoc}
             codeblock
-            table "Custom Resource Definitions" "REVIEW"
+            table "Custom Resource Definitions" "REVIEW" ${section}
          fi
       done 
    }
@@ -488,9 +477,9 @@ nodes(){
       oc get clusterresourcequotas.quota.openshift.io -A --no-headers 2>/dev/null >> ${adoc}
       if (( $(oc get clusterresourcequotas.quota.openshift.io -A --no-headers 2>/dev/null | wc -l) > 0 ))
       then 
-         table "Cluster Resource Quotas" "REVIEW"
+         table "Cluster Resource Quotas" "REVIEW" ${section}
       else 
-         table "Cluster Resource Quotas" "PASS"
+         table "Cluster Resource Quotas" "PASS" ${section}
       fi
       codeblock 
    }
@@ -503,9 +492,9 @@ nodes(){
       oc get clusterserviceversions.operators.coreos.com -A 2>/dev/null | grep -v Succeeded >> ${adoc}
       if (( $(oc get clusterserviceversions.operators.coreos.com -A --no-headers 2>/dev/null | grep -v Succeeded | wc -l) > 0 ))
       then 
-         table "Cluster Service Versions" "FAIL"
+         table "Cluster Service Versions" "FAIL" ${section}
       else 
-         table "Cluster Service Versions" "PASS"
+         table "Cluster Service Versions" "PASS" ${section}
       fi
       codeblock 
    }
@@ -532,9 +521,9 @@ machines(){
       oc get machines -A 2>/dev/null | grep -v Running >> ${adoc}
       if (( $(oc get machines -A --no-headers 2>/dev/null | grep -v Running | wc -l) > 0 ))
       then 
-         table "Machine Information" "FAIL"
+         table "Machine Information" "FAIL" ${section}
       else 
-         table "Machine Information" "PASS"
+         table "Machine Information" "PASS" ${section}
       fi
       codeblock
    }
@@ -554,7 +543,7 @@ machines(){
             state="FAIL"
          fi
       done < <(oc get machinesets -A 2>/dev/null )
-      table "Machinesets Information" ${state}
+      table "Machinesets Information" ${state} ${section}
       codeblock 
    }
 
@@ -564,7 +553,7 @@ machines(){
       link "https://docs.openshift.com/container-platform/${cv}/machine_management/index.html"
       codeblock 
       oc get nodes machineconfig 2>/dev/null >> ${adoc}
-      table "Machine Configs" "PASS"
+      table "Machine Configs" "PASS" ${section}
       codeblock 
    }
 
@@ -574,7 +563,7 @@ machines(){
       link "https://docs.openshift.com/container-platform/${cv}/machine_management/index.html"
       codeblock 
       oc get nodes machineconfigpools 2>/dev/null >> ${adoc}
-      table "Machine Config Pools" "PASS"
+      table "Machine Config Pools" "PASS" ${section}
       codeblock 
    }
 
@@ -584,7 +573,7 @@ machines(){
       link "https://docs.openshift.com/container-platform/${cv}/machine_management/index.html"
       codeblock 
       oc get machineautoscaler -A 2>/dev/null >> ${adoc}  
-      table "Machine Auto Scalers" "REVIEW"
+      table "Machine Auto Scalers" "REVIEW" ${section}
       codeblock 
    }
 
@@ -600,7 +589,7 @@ machines(){
          codeblock
          echo "" >> ${adoc}
       done 
-      table "Cluster Auto Scalers" "REVIEW"
+      table "Cluster Auto Scalers" "REVIEW" ${section}
    }
 
    machinehealthcheck(){
@@ -620,7 +609,7 @@ machines(){
          fi
       done < <(oc get machinehealthcheck -A --no-headers 2>/dev/null)
       codeblock 
-      table "Machine Health Checks" ${state}
+      table "Machine Health Checks" ${state} ${section}
    }
 
    # Includes 
@@ -649,7 +638,7 @@ etcd(){
       codeblock 
       oc get pods -n ${ns} -l app=etcd >> ${adoc}
       codeblock 
-      table "etcd pods info" "REVIEW"
+      table "etcd pods info" "REVIEW" ${section}
    }
 
    member_list(){
@@ -662,9 +651,9 @@ etcd(){
       echo "|===" >> ${adoc}
       if (( $( ${connect} etcdctl member list -w table 2>/dev/null | grep -v "+-" | sed 's/..$//' | grep -vE "STATUS|started" | wc -l ) > 0 ))
       then
-         table "Failing members in the cluster" "FAIL"
+         table "Failing members in the cluster" "FAIL" ${section}
       else
-         table "Failing members in the cluster" "PASS"
+         table "Failing members in the cluster" "PASS" ${section}
       fi
    }
 
@@ -676,7 +665,7 @@ etcd(){
       echo "|===" >> ${adoc}
       ${connect} etcdctl endpoint status --cluster -w table 2>/dev/null | grep -v "+-" | sed 's/..$//' >> ${adoc}
       echo "|===" >> ${adoc} 
-      table "Endpoints status" "REVIEW"
+      table "Endpoints status" "REVIEW" ${section}
    }
 
    endpoint_health(){
@@ -687,7 +676,7 @@ etcd(){
       echo "|===" >> ${adoc}
       ${connect} etcdctl endpoint health --cluster -w table 2>/dev/null | grep -v "+-" | sed 's/..$//' >> ${adoc}
       echo "|===" >> ${adoc} 
-      table "Endpoints Health" "REVIEW"
+      table "Endpoints Health" "REVIEW" ${section}
    }
 
    # Includes 
@@ -710,9 +699,9 @@ pods(){
       oc get pods -A | grep -vE 'Running|Completed' | column -t >> ${adoc}
       if (( $(oc get pods -A --no-headers | grep -vE 'Running|Completed' | wc -l ) > 0 ))
       then
-         table "Failing pods" "FAIL"
+         table "Failing pods" "FAIL" ${section}
       else
-         table "Failing pods" "PASS"
+         table "Failing pods" "PASS" ${section}
       fi
       codeblock 
    }
@@ -724,7 +713,7 @@ pods(){
       codeblock 
       oc get pods -A | grep -w Running | sort -nrk 5 | head -10 | column -t >> ${adoc}
       codeblock 
-      table "Constanstly restarted pods" "REVIEW"
+      table "Constanstly restarted pods" "REVIEW" ${section}
    }
 
    long_running_pods(){
@@ -734,7 +723,7 @@ pods(){
       codeblock 
       oc get pods -A | grep -w Running | grep -vE "[0-9]h$" | sort -hrk 6| head -10 | column -t >> ${adoc}
       codeblock 
-      table "Long running pods" "REVIEW"
+      table "Long running pods" "REVIEW" ${section}
    }
 
    poddisruptionbudget(){
@@ -744,7 +733,7 @@ pods(){
       codeblock 
       oc get poddisruptionbudget -A | column -t >> ${adoc}
       codeblock 
-      table "Pod Disruption Budget" "REVIEW"
+      table "Pod Disruption Budget" "REVIEW" ${section}
    }
 
    pods_in_default(){
@@ -753,7 +742,7 @@ pods(){
       codeblock 
       oc get pods -n default -o wide 2>/dev/null | column -t >> ${adoc}
       codeblock 
-      table "Pods in default namespace" "REVIEW"
+      table "Pods in default namespace" "REVIEW" ${section}
    }
 
    pods_per_node(){
@@ -761,7 +750,7 @@ pods(){
       codeblock 
       oc get pods -A -o wide --no-headers | awk '{print $(NF-2)}' | sort | uniq -c | sort -n >> ${adoc}
       codeblock 
-      table "Pods per node" "REVIEW"
+      table "Pods per node" "REVIEW" ${section}
    }
 
    # Includes 
@@ -787,9 +776,9 @@ security(){
       codeblock 
       if (( $(oc get csr 2>/dev/null | grep -i pending | wc -l ) > 0 ))
       then
-         table "Pending CSRs" "FAIL"
+         table "Pending CSRs" "FAIL" ${section}
       else
-         table "Pending CSRs" "PASS"
+         table "Pending CSRs" "PASS" ${section}
       fi
    }
 
@@ -800,7 +789,7 @@ security(){
       codeblock 
       oc get identity >> ${adoc}
       codeblock 
-      table "Cluster Identities" "REVIEW"
+      table "Cluster Identities" "REVIEW" ${section}
       #TODO review if the result from `oc get users` is the same  
    }
 
@@ -816,7 +805,7 @@ security(){
       codeblock
       oc adm policy who-can delete user | sed -n '/Users:/,/Groups:/p' | sed '$ d' >> ${adoc}
       codeblock
-      table "Identities grants" "REVIEW"
+      table "Identities grants" "REVIEW" ${section}
    }
 
    rolebindings(){
@@ -826,7 +815,7 @@ security(){
       codeblock 
       oc get rolebindings -A | head | column -t | awk '{print $1,$2,"\n","\t\t",$3}' >> ${adoc}
       codeblock
-      table "Rolebindings" "REVIEW"
+      table "Rolebindings" "REVIEW" ${section}
    }
 
    clusterrolebinding(){
@@ -836,7 +825,7 @@ security(){
       codeblock 
       oc get clusterrolebindings | awk '{print $1,$2}' | sed 's/ClusterRole\///g' | sort -k2 >> ${adoc}
       codeblock
-      table "Cluster Rolebindings" "REVIEW"
+      table "Cluster Rolebindings" "REVIEW" ${section}
    }
 
    kubeadmin_secret(){
@@ -849,9 +838,9 @@ security(){
       codeblock 
       if (( $(oc get secret -n kube-system kubeadmin --no-headers 2>/dev/null | wc -l ) > 0 ))
       then
-         table "Kubeadmin Secret" "FAIL"
+         table "Kubeadmin Secret" "FAIL" ${section}
       else
-         table "Kubeadmin Secret" "PASS"
+         table "Kubeadmin Secret" "PASS" ${section}
       fi
    }
 
@@ -862,7 +851,7 @@ security(){
       codeblock 
       oc get oauth cluster -o json | jq -r '.spec.identityProviders' >> ${adoc}
       codeblock 
-      table "Identity Providers" "REVIEW"
+      table "Identity Providers" "REVIEW" ${section}
    }
 
    authentications(){
@@ -872,7 +861,7 @@ security(){
       codeblock 
       oc get authentications -o json 2>/dev/null | jq '.items[] | .metadata.annotations, .spec.webhookTokenAuthenticator, .status' >> ${adoc}
       codeblock 
-      table "Cluster Authentications" "REVIEW"
+      table "Cluster Authentications" "REVIEW" ${section}
    }
 
    kubeletconfig(){
@@ -882,7 +871,7 @@ security(){
       codeblock 
       oc get kubeletconfig -o json 2>/dev/null >> ${adoc}
       codeblock
-      table "Kubelet Configurations" "REVIEW"
+      table "Kubelet Configurations" "REVIEW" ${section}
    }
 
    subscriptions(){
@@ -896,9 +885,9 @@ security(){
       codeblock
       if (( $(oc get subscriptions -A --no-headers 2>/dev/null | grep -v stable | wc -l ) > 0 ))
       then
-         table "Cluster Subscriptions from non-stable channels" "FAIL"
+         table "Cluster Subscriptions from non-stable channels" "FAIL" ${section}
       else
-         table "Cluster Subscriptions from non-stable channels" "PASS"
+         table "Cluster Subscriptions from non-stable channels" "PASS" ${section}
       fi
 
       echo "==== Subscriptions Catalog Health" >> ${adoc}
@@ -914,7 +903,7 @@ security(){
             codeblock
          fi 
       done 
-      table "Cluster Subscriptions Catalog Health" ${state}      
+      table "Cluster Subscriptions Catalog Health" ${state} ${section}
       
       echo "==== Subscriptions Conditions" >> ${adoc}
       state="PASS"
@@ -929,7 +918,7 @@ security(){
             codeblock
          fi 
       done 
-      table "Cluster Subscriptions Conditions" ${state}   
+      table "Cluster Subscriptions Conditions" ${state} ${section}
    }
 
    webhooks(){
@@ -945,7 +934,7 @@ security(){
       oc get mutatingwebhookconfigurations -A -o json 2>/dev/null | jq '.items[].webhooks[]' | grep -v 'caBundle' >> ${adoc}
       # oc get mutatingwebhookconfigurations -A 2>/dev/null >> ${adoc}
       codeblock 
-      table "WebHooks" "REVIEW"
+      table "WebHooks" "REVIEW" ${section}
    }
 
    api_versions(){
@@ -980,7 +969,7 @@ security(){
          verify "/etc/kubernetes/static-pod-resources/kube-scheduler-pod.yaml" "openshift-kube-scheduler" ${schedulerpods[@]}
          verify "/etc/kubernetes/manifests/etcd-pod.yaml" "openshift-etcd" ${etcdpods[@]}
       codeblock
-      table "API Versions" ${state}
+      table "API Versions" ${state} ${section}
    }
 
    # Expiration of certificates in configmaps and secrets 
@@ -1018,9 +1007,9 @@ storage(){
          oc get pv -A -o wide 2>/dev/null | grep -w ${status} | column -t >> ${adoc}
          if (( $(oc get pv -A -o wide 2>/dev/null | grep -w ${status} | wc -l ) > 0 ))
          then
-            table "PV Status ${status}" "FAIL"
+            table "PV Status ${status}" "FAIL" ${section}
          else
-            table "PV Status ${status}" "PASS"
+            table "PV Status ${status}" "PASS" ${section}
          fi
          codeblock 
       done
@@ -1037,9 +1026,9 @@ storage(){
          oc get pvc -A -o wide 2>/dev/null | grep -w ${status} | column -t >> ${adoc}
          if (( $(oc get pvc -A -o wide 2>/dev/null | grep -w ${status} | wc -l ) > 0 ))
          then
-            table "PVC Status ${status}" "FAIL"
+            table "PVC Status ${status}" "FAIL" ${section}
          else
-            table "PVC Status ${status}" "PASS"
+            table "PVC Status ${status}" "PASS" ${section}
          fi
          codeblock 
       done
@@ -1052,7 +1041,7 @@ storage(){
       codeblock 
       oc get storageclasses 2>/dev/null >> ${adoc}
       codeblock 
-      table "Storage Classes" "REVIEW"
+      table "Storage Classes" "REVIEW" ${section}
    }
 
    quotas(){
@@ -1062,7 +1051,7 @@ storage(){
       codeblock 
       oc get quota -A 2>/dev/null >> ${adoc}
       codeblock 
-      table "Quotas" "REVIEW"
+      table "Quotas" "REVIEW" ${section}
    }
 
    volumeSnapshot(){
@@ -1087,7 +1076,7 @@ storage(){
          fi
       done < <(oc get volumesnapshot -A 2>/dev/null)
       codeblock 
-      table "Volume Snapshots Age" ${state}
+      table "Volume Snapshots Age" ${state} ${section}
    }
 
    csidrivers(){
@@ -1097,7 +1086,7 @@ storage(){
       codeblock 
       oc get csidrivers 2>/dev/null | column -t >> ${adoc}
       codeblock 
-      table "CSI Drivers" "REVIEW"
+      table "CSI Drivers" "REVIEW" ${section}
    }
 
    csinodes(){
@@ -1105,7 +1094,7 @@ storage(){
       codeblock 
       oc get csinodes 2>/dev/null | column -t >> ${adoc}
       codeblock 
-      table  "CSI Nodes" "REVIEW"
+      table  "CSI Nodes" "REVIEW" ${section}
    }
 
    featuregate(){
@@ -1118,7 +1107,7 @@ storage(){
          oc get featuregates -A -o json 2>/dev/null | jq -c '.items[].spec' >> ${adoc}
       fi 
       codeblock 
-      table "Feature Gates" "REVIEW"
+      table "Feature Gates" "REVIEW" ${section}
    }
 
    horizontalpodautoscalers(){
@@ -1128,7 +1117,7 @@ storage(){
       codeblock 
       oc get horizontalpodautoscalers -A 2>/dev/null >> ${adoc}
       codeblock 
-      table "Horizontal Pod AutoScalers" "REVIEW"
+      table "Horizontal Pod AutoScalers" "REVIEW" ${section}
    }
 
    # Includes 
@@ -1165,7 +1154,7 @@ performance(){
       codeblock 
       oc adm top nodes --no-headers | sort -nrk5 2>/dev/null | head -${limit} | awk '{print $1,$4,$5}' >> ${adoc}
       codeblock 
-      table "Nodes Memory Utilization" "REVIEW"
+      table "Nodes Memory Utilization" "REVIEW" ${section}
    }
 
    nodes_cpu(){
@@ -1176,7 +1165,7 @@ performance(){
       codeblock 
       oc adm top nodes --no-headers | sort -nrk3 2>/dev/null | head -${limit} | awk '{print $1,$2,$3}' >> ${adoc}
       codeblock 
-      table "Nodes CPU Utilization" "REVIEW"
+      table "Nodes CPU Utilization" "REVIEW" ${section}
    }
 
    pods_memory(){
@@ -1186,7 +1175,7 @@ performance(){
       codeblock 
       oc adm top pods -A --sort-by=memory --no-headers 2>/dev/null | head -21 | column -t | awk '{print $1,$2,$4}' >> ${adoc}
       codeblock 
-      table "Pods Memory Utilization" "REVIEW"
+      table "Pods Memory Utilization" "REVIEW" ${section}
    }
 
    pods_cpu(){
@@ -1196,7 +1185,7 @@ performance(){
       codeblock 
       oc adm top pods -A --sort-by=cpu --no-headers 2>/dev/null | head -21 | column -t | awk '{print $1,$2,$3}' >> ${adoc}
       codeblock 
-      table "Pods CPU Utilization" "REVIEW"
+      table "Pods CPU Utilization" "REVIEW" ${section}
    }
 
    # Includes 
@@ -1221,6 +1210,7 @@ logging(){
       codeblock 
       oc get all -n openshift-logging 2>/dev/null >> ${adoc}
       codeblock 
+      table "Logging Resources" "REVIEW" ${section}
    }
 
    # Includes 
@@ -1246,7 +1236,7 @@ monitoring (){
          oc get prometheuses -A -o json 2>/dev/null | jq -c '.items[].spec | .securityContext,.retention,.resources' >> ${adoc}
          codeblock 
       fi
-      table "Prometheus Status" "REVIEW"
+      table "Prometheus Status" "REVIEW" ${section}
    }
 
    prometheus_rules(){
@@ -1264,7 +1254,7 @@ monitoring (){
             codeblock 
          done < <(oc get prometheusrules -A --no-headers 2>/dev/null | awk '{print $1,$2}')
       fi 
-      table "Prometheus Rules" "REVIEW"
+      table "Prometheus Rules" "REVIEW" ${section}
    }
 
    servicemonitors(){
@@ -1274,7 +1264,7 @@ monitoring (){
       codeblock 
       oc get servicemonitors -A 2>/dev/null | awk '{print $1,$2}' | column -t >> ${adoc}
       codeblock 
-      table "Sevice Monitors" "REVIEW" 
+      table "Sevice Monitors" "REVIEW"  ${section}
    }
 
    podmonitors(){
@@ -1282,7 +1272,7 @@ monitoring (){
       codeblock 
       oc get podmonitors -A 2>/dev/null | awk '{print $1,$2}' | column -t >> ${adoc}
       codeblock 
-      table "Pod Monitors" "REVIEW" 
+      table "Pod Monitors" "REVIEW"  ${section}
    }
 
    alertmanagers(){
@@ -1290,7 +1280,7 @@ monitoring (){
       codeblock 
       oc get alertmanagers -A 2>/dev/null >> ${adoc}
       codeblock 
-      table "Alert Managers" "REVIEW" 
+      table "Alert Managers" "REVIEW"  ${section}
    }
 
    agents(){
@@ -1322,7 +1312,7 @@ monitoring (){
       done 
       rm /tmp/ocp-health.tmp 
       echo "|===" >> ${adoc}
-      table "Monitoring Agents & Dashboards" ${state}
+      table "Monitoring Agents & Dashboards" ${state} ${section}
    }
 
    # Includes 
@@ -1346,7 +1336,7 @@ network(){
       codeblock 
       oc get network cluster -o json 2>/dev/null | jq '.spec' >> ${adoc}
       codeblock 
-      table "Enabled Networks" "REVIEW"
+      table "Enabled Networks" "REVIEW" ${section}
    }
 
    networkpolicies(){
@@ -1362,7 +1352,7 @@ network(){
          codeblock 
          echo "" >> ${adoc}
       done < <(oc get networkpolicies -A --no-headers 2>/dev/null | awk '{print $1,$2}')
-      table "Network Policies" "REVIEW"
+      table "Network Policies" "REVIEW" ${section}
    }
 
    clusternetworks(){
@@ -1372,7 +1362,7 @@ network(){
       codeblock 
       oc get clusternetworks 2>/dev/null >> ${adoc}
       codeblock 
-      table "Cluster Networks" "REVIEW"
+      table "Cluster Networks" "REVIEW" ${section}
    }
 
    hostsubnet(){
@@ -1382,7 +1372,7 @@ network(){
       codeblock 
       oc get hostsubnet 2>/dev/null >> ${adoc}
       codeblock 
-      table "Host Subnets" "REVIEW"
+      table "Host Subnets" "REVIEW" ${section}
    }
 
    proxy(){
@@ -1392,7 +1382,7 @@ network(){
       codeblock 
       oc get proxy cluster -o json 2>/dev/null | jq '.' >> ${adoc}
       codeblock 
-      table "Cluster Proxy" "REVIEW"
+      table "Cluster Proxy" "REVIEW" ${section}
    }
 
    endpoints(){
@@ -1400,7 +1390,7 @@ network(){
       codeblock
       oc get endpoints -A 2>/dev/null | column -t | awk '{$5=$3} {$3="\n"} {$4="\t\t"} {print $0}' >> ${adoc}
       codeblock
-      table "Network Endpoints" "REVIEW"
+      table "Network Endpoints" "REVIEW" ${section}
    }
 
    podnetworkconnectivitycheck(){
@@ -1423,7 +1413,7 @@ network(){
          fi
       done
       echo "|===" >> ${adoc}
-      table "Pod Network Connectivity Check" ${state}
+      table "Pod Network Connectivity Check" ${state} ${section}
    }
 
    route(){
@@ -1433,7 +1423,7 @@ network(){
       codeblock 
       oc get route -A 2>/dev/null | awk '{print $1,$2,"\n","\t\t",$3,$4,$5,$6,$7,$8}' >> ${adoc}
       codeblock 
-      table "Routes" "REVIEW"
+      table "Routes" "REVIEW" ${section}
    }
 
    egressnetworkpolicy(){
@@ -1443,7 +1433,7 @@ network(){
       codeblock 
       oc get egressnetworkpolicy -A 2>/dev/null >> ${adoc}
       codeblock 
-      table "Egress Network Policy" "REVIEW"
+      table "Egress Network Policy" "REVIEW" ${section}
    }
 
    ingresscontrollers(){
@@ -1457,7 +1447,7 @@ network(){
          oc get ingresscontrollers -n openshift-ingress-operator ${ingctl} -o json 2>/dev/null | jq '.status' >> ${adoc}
          codeblock 
       done 
-      table "Ingress Controllers" "REVIEW"
+      table "Ingress Controllers" "REVIEW" ${section}
    }
 
    ingresses(){
@@ -1467,7 +1457,7 @@ network(){
       codeblock 
       oc get ingresses -A 2>/dev/null >> ${adoc} 
       codeblock 
-      table "Ingresses" "REVIEW"
+      table "Ingresses" "REVIEW" ${section}
    }
 
    ingress_controler_pods(){
@@ -1490,7 +1480,7 @@ network(){
             codeblock 
          done
       done
-      table "Ingress Controller Pods" "REVIEW"
+      table "Ingress Controller Pods" "REVIEW" ${section}
    }
 
    mtu_size(){
@@ -1504,7 +1494,7 @@ network(){
             sub "MTU Size"
             quote "The MTU setting of the OpenShift SDN is greater than one on the physical network. Severe fragmentation and performance degradation will occur."
             link "https://docs.openshift.com/container-platform/${cv}/networking/changing-cluster-network-mtu.html"
-            table "MTU Size" "REVIEW"
+            table "MTU Size" "REVIEW" ${section}
          fi
       fi
    }
@@ -1541,9 +1531,9 @@ operators(){
       oc get clusteroperators --no-headers | awk '$5 == "True"' >> ${adoc}
       if (( $(oc get clusteroperators --no-headers | awk '$5 == "True"' | wc -l ) > 0 ))
       then 
-         table "Degraded Cluster Operators" "FAIL"
+         table "Degraded Cluster Operators" "FAIL" ${section}
       else
-         table "Degraded Cluster Operators" "PASS"
+         table "Degraded Cluster Operators" "PASS" ${section}
       fi
       codeblock
    }
@@ -1556,9 +1546,9 @@ operators(){
       oc get clusteroperators --no-headers |awk '$3 == "False"' >> ${adoc}
       if (( $(oc get clusteroperators --no-headers | awk '$3 == "False"' | wc -l ) > 0 ))
       then 
-         table "Unavailable Cluster Operators" "FAIL"
+         table "Unavailable Cluster Operators" "FAIL" ${section}
       else
-         table "Unavailable Cluster Operators" "PASS"
+         table "Unavailable Cluster Operators" "PASS" ${section}
       fi
       codeblock
    }
@@ -1570,7 +1560,7 @@ operators(){
       codeblock 
       oc get clusterserviceversion -A -o wide --no-headers | awk '{print $2}' | sort | uniq  >> ${adoc}
       codeblock 
-      table "Cluster Services Versions" "REVIEW"
+      table "Cluster Services Versions" "REVIEW" ${section}
    }
 
    operatorgroups(){
@@ -1580,7 +1570,7 @@ operators(){
       codeblock 
       oc get operatorgroups -A 2>/dev/null >> ${adoc}
       codeblock 
-      table "Operator Groups" "REVIEW"
+      table "Operator Groups" "REVIEW" ${section}
    }
 
    operatorsources(){
@@ -1588,7 +1578,7 @@ operators(){
       codeblock 
       oc get operatorsources -A 2>/dev/null  >> ${adoc}
       codeblock 
-      table "Operator Sources" "REVIEW"
+      table "Operator Sources" "REVIEW" ${section}
    }
 
    # Includes 
@@ -1614,7 +1604,7 @@ mesh(){
          codeblock 
          oc get servicemeshcontrolplane -A 2>/dev/null  >> ${adoc}
          codeblock 
-         table "Service Mesh ControlPlane" "REVIEW"
+         table "Service Mesh ControlPlane" "REVIEW" ${section}
       fi
    }
 
@@ -1625,7 +1615,7 @@ mesh(){
          codeblock
          oc get servicemeshmember -A 2>/dev/null  >> ${adoc}
          codeblock 
-         table "Service Mesh Members" "REVIEW"
+         table "Service Mesh Members" "REVIEW" ${section}
       fi
    }
 
@@ -1636,7 +1626,7 @@ mesh(){
          codeblock 
          oc get servicemeshmemberroll -A 2>/dev/null  >> ${adoc}
          codeblock 
-         table "Service Mesh Members Rolls" "REVIEW"
+         table "Service Mesh Members Rolls" "REVIEW" ${section}
       fi
    }
 
@@ -1680,59 +1670,59 @@ applications(){
          state="FAIL"
       fi
       codeblock
-      table "Application Deployment" ${state}
+      table "Application Deployment" ${state} ${section}
    }
 
    non_ready_deployments(){
       sub "Non-Ready Deployments"
       codeblock
       oc get deployment -A 2>/dev/null | grep -E "0/[0-9]|NAMESPACE" | column -t >> ${adoc}
+      codeblock
       if (( $(oc get deployment -A 2>/dev/null | grep -E "0/[0-9]|NAMESPACE" | wc -l) > 0 ))
       then 
-         table "Non-Ready Deployments" "FAIL"
+         table "Non-Ready Deployments" "FAIL" ${section}
       else 
-         table "Non-Ready Deployments" "PASS"
+         table "Non-Ready Deployments" "PASS" ${section}
       fi 
-      codeblock
    }
 
    non_available_deployments(){
       sub "Unavailable Deployments"
       codeblock 
       oc get deployment -A | awk '$(NF-1)=="0" || $1=="NAMESPACE"' | column -t >> ${adoc}
+      codeblock 
       if (( $(oc get deployment -A | awk '$(NF-1)=="0" || $1=="NAMESPACE"' | wc -l) > 0 ))
       then 
-         table "Unavailable Deployments" "FAIL"
+         table "Unavailable Deployments" "FAIL" ${section}
       else 
-         table "Unavailable Deployments" "PASS"
+         table "Unavailable Deployments" "PASS" ${section}
       fi 
-      codeblock 
    }
 
    inactive_projects(){
       sub "Inactive projects"
       codeblock 
-      oc get projects --no-headers | awk '$NF =! "Active"' >> ${adoc}
+      oc get projects --no-headers 2>/dev/null | awk '$NF =! "Active"' >> ${adoc}
       codeblock
-      if (( $(oc get projects --no-headers | awk '{$NF =! "Active"}' | wc -l) > 0 ))
+      if (( $(oc get projects --no-headers 2>/dev/null | awk '$NF =! "Active"' | wc -l) > 0 ))
       then 
-         table "Inactive projects" "FAIL"
+         table "Inactive projects" "FAIL" ${section}
       else 
-         table "Inactive projects" "PASS"
+         table "Inactive projects" "PASS" ${section}
       fi 
    }
 
    failed_builds(){
       sub "Failed Builds"
       codeblock 
-      oc get builds -A | awk '$5 =! "Complete"' >> ${adoc}
-      if (( $(oc get builds -A | awk '{$5 =! "Complete"}' | wc -l) > 0 ))
-      then 
-         table "Failed Builds" "FAIL"
-      else 
-         table "Failed Builds" "PASS"
-      fi
+      oc get builds -A 2>/dev/null | grep -vE "Complete|Running" >> ${adoc}
       codeblock 
+      if (( $(oc get builds -A 2>/dev/null | grep -vE "Complete|Running" | wc -l) > 0 ))
+      then 
+         table "Failed Builds" "FAIL" ${section}
+      else 
+         table "Failed Builds" "PASS" ${section}
+      fi
    }
 
    # Includes 
@@ -1748,7 +1738,7 @@ applications(){
 }
 
 main(){
-   environment_setup
+   environment_setup ${1}
    executive_summary
    table      # Initializing the executive summary table
    commons
@@ -1769,6 +1759,6 @@ main(){
    generate_pdf
 } 
 
-main 
+main ${1}
 
 # EndOfScript

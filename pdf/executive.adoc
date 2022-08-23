@@ -1,7 +1,9 @@
 
 == Executive Summary 
 
-Red Hat Consulting executed both a manual and automated automated health check verifications in Point72's Openshift Container Platform Version 4.9 Non-Production cluster to identify possible problems on security, performance, configuration and overall utilization of the platform.
+`Red Hat Consulting` has been engaged to conduct a Health Check analysis at `Point72's` Openshift Container Platform 4 for the `Non-Production` cluster. The Openshift Health Check tool is designed to proactively identify problems in all areas of the cluster that might impact the platform's functionality, performance, configuration, and overall utilization. 
+
+The Health Check covers all the relevant sections of the OCP cluster from the Infrastructure and Applications and focuses on presenting only information that needs to have some attention, providing supporting documentation for the findings. The Openshift Health Check is a fully automated tool that gathers pertinent information for consultants to work with you on implementing recommendations and possible action items in your environment.
 
 > Result: PASS
 
