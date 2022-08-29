@@ -126,17 +126,30 @@ link(){
 }
 
 executive_summary(){
-   if [ -f pdf/executive.adoc ]
+   if [ -f pdf/addons/executive.adoc ]
    then 
-      cat pdf/executive.adoc >> ${adoc}
+      cat pdf/addons/executive.adoc >> ${adoc}
       echo "" >> ${adoc}
       echo "@STATUS_PLACEHOLDER@" >> ${adoc}
       echo "" >> ${adoc}
       echo "@CHECKLIST_PLACEHOLDER@" >> ${adoc}
       echo "" >> ${adoc}
    else 
-      echo "The pdf/executive.adoc file was not found. Will continue without executive summary"
+      echo "The pdf/addons/executive.adoc file was not found. Will continue without executive summary"
    fi 
+}
+
+addons(){
+   # This space is reserved to include other adoc documents in the report
+   # The structure of those documents is completely independent
+   # All is required is to place them inside of the pdf/addons/ folder 
+   # and add it to the following list to be processed.
+   include_adoc=(odf)
+
+   for item in ${include_adoc[@]}
+   do
+      cat pdf/addons/${item}.adoc >> ${adoc}
+   done
 }
 
 table(){
@@ -1756,6 +1769,7 @@ main(){
    mesh
    applications 
    table close_table_now   # Closing and adding the executive summary table
+   addons
    generate_pdf
 } 
 
